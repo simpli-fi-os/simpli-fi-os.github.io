@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Breanne — Test Harness</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', ui-sans-serif, system-ui; }
+        .result-pass { color: #059669; }
+        .result-fail { color: #dc2626; }
+        .result-skip { color: #d97706; }
+        .case { border-left: 3px solid #cbd5e1; padding-left: 12px; margin: 4px 0; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; }
+        .case.pass { border-color: #059669; }
+        .case.fail { border-color: #dc2626; }
+        .case.skip { border-color: #d97706; }
+        .case .detail { color: #64748b; margin-left: 16px; font-size: 12px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+    <div class="max-w-4xl mx-auto p-8">
+        <header class="mb-8">
+            <div class="flex items-center gap-3 mb-2">
+                <h1 class="text-3xl font-bold">Breanne Test Harness</h1>
+                <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full font-semibold">v2.1</span>
+            </div>
+            <p class="text-slate-600">Lightweight health-check for the core API exposed on <code class="bg-slate-200 px-1 rounded">window.__BREANNE__</code>. Runs against a hidden iframe of <code class="bg-slate-200 px-1 rounded">index.html</code>.</p>
+        </header>
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold">Summary</h2>
+                <div class="flex gap-2">
+                    <button id="runBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold">Run tests</button>
+                    <button id="resetBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-semibold" title="Clear breanne.* localStorage in this tab + iframe">Reset state</button>
+                </div>
+            </div>
+            <div id="summary" class="text-slate-500">Click "Run tests" to start.</div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Results</h2>
+            <div id="results" class="space-y-1"></div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-2">Rendered Markdown sample</h2>
+            <p class="text-sm text-slate-600 mb-3">Proof that <code>renderMarkdown()</code> produces sanitized output. The injected <code>&lt;script&gt;</code> and <code>onerror</code> below are stripped before reaching the DOM.</p>
+            <div id="mdSample" class="prose prose-slate max-w-none border border-slate-200 rounded-lg p-4 min-h-[80px]"></div>
+        </div>
+
+        <iframe id="app" src="index.html" class="w-full h-[600px] border border-slate-200 rounded-xl bg-white" title="Breanne app (test subject)"></iframe>
+    </div>
+
+    <script>
+        const results = [];
+        const resultsEl = document.getElementById('results');
+        const summaryEl = document.getElementById('summary');
+
+        function clearChildren(node) {
+            while (node.firstChild) node.removeChild(node.firstChild);
+        }
+
+        function record(name, status, detail) {
+            results.push({ name, status, detail });
+            const div = document.createElement('div');
+            div.className = 'case ' + status;
+
+            const icon = document.createElement('span');
+            icon.className = 'result-' + status;
+            icon.textContent = status === 'pass' ? '✓' : status === 'fail' ? '✗' : '⊘';
+            div.appendChild(icon);
+            div.appendChild(document.createTextNode(' '));
+
+            const strong = document.createElement('strong');
+            strong.textContent = name;
+            div.appendChild(strong);
+
+            if (detail) {
+                const d = document.createElement('div');
+                d.className = 'detail';
+                d.textContent = detail;
+                div.appendChild(d);
+            }
+            resultsEl.appendChild(div);
+        }
+
+        function assert(cond, name, detail) {
+            if (cond) record(name, 'pass');
+            else record(name, 'fail', detail || 'assertion failed');
+            return cond;
+        }
+
+        function waitForApp() {
+            return new Promise((resolve, reject) => {
+                const iframe = document.getElementById('app');
+                const started = Date.now();
+                function check() {
+                    try {
+                        if (iframe.contentWindow && iframe.contentWindow.__BREANNE__) {
+                            resolve(iframe.contentWindow);
+                            return;
+                        }
+                    } catch (_) {}
+                    if (Date.now() - started > 10000) {
+                        reject(new Error('App did not expose __BREANNE__ within 10s. Is index.html in the same folder?'));
+                        return;
+                    }
+                    setTimeout(check, 100);
+                }
+                check();
+            });
+        }
+
+        async function runTests() {
+            clearChildren(resultsEl);
+            results.length = 0;
+            summaryEl.textContent = 'Running…';
+            clearChildren(document.getElementById('mdSample'));
+
+            let win;
+            try {
+                win = await waitForApp();
+                record('Boot: window.__BREANNE__ available in iframe', 'pass');
+            } catch (err) {
+                record('Boot: window.__BREANNE__ available in iframe', 'fail', err.message);
+                finish();
+                return;
+            }
+
+            const B = win.__BREANNE__;
+
+            // 1. Shape of the exposed surface.
+            assert(typeof B.parseDocumentText === 'function', 'Surface: parseDocumentText is a function');
+            assert(typeof B.renderMarkdown === 'function', 'Surface: renderMarkdown is a function');
+            assert(typeof B.isSubscribed === 'function', 'Surface: isSubscribed is a function');
+            assert(typeof B.getEmail === 'function', 'Surface: getEmail is a function');
+            assert(typeof B.getUsage === 'function', 'Surface: getUsage is a function');
+            assert(B.CONFIG && typeof B.CONFIG === 'object', 'Surface: CONFIG object exposed');
+
+            // 2. CONFIG sanity.
+            assert(typeof B.CONFIG.STRIPE_PAYMENT_LINK === 'string' && B.CONFIG.STRIPE_PAYMENT_LINK.length > 0, 'Config: STRIPE_PAYMENT_LINK is a non-empty string');
+            assert(B.CONFIG.FREE_DOCUMENTS_PER_EMAIL === 1, 'Config: FREE_DOCUMENTS_PER_EMAIL === 1');
+            assert(B.CONFIG.PRICE_MONTHLY && /\$/.test(B.CONFIG.PRICE_MONTHLY), 'Config: PRICE_MONTHLY contains a $');
+            if (B.CONFIG.STRIPE_PAYMENT_LINK.includes('REPLACE_ME')) {
+                record('Config: Stripe Payment Link is live', 'skip', 'Still placeholder — create the live link at dashboard.stripe.com');
+            } else {
+                record('Config: Stripe Payment Link is live', 'pass');
+            }
+
+            // 3. parseDocumentText — structural fields.
+            const sampleDoc = `SUBSCRIPTION AGREEMENT
+
+This agreement is entered into by the subscriber.
+
+Subscriber Name: ___________
+Email: ___________
+Phone: ___________
+Address: ___________
+City: ___________
+State: ___________
+ZIP: ___________
+Amount: $___________
+Tax ID: ___________
+
+Signature: ___________
+Date: ___________
+`;
+            const parsed = B.parseDocumentText(sampleDoc);
+            assert(parsed && typeof parsed === 'object', 'Parser: returns an object');
+            assert(Array.isArray(parsed.fields), 'Parser: fields is an array');
+            assert(parsed.fields.length >= 8, 'Parser: finds at least 8 fields in a realistic doc', `found ${parsed.fields.length}`);
+
+            const hasType = t => parsed.fields.some(f => f.type === t);
+            assert(hasType('signature'), 'Parser: detects signature field');
+            assert(hasType('date'), 'Parser: detects date field');
+            assert(hasType('email'), 'Parser: detects email field');
+            assert(hasType('tel'), 'Parser: detects phone field');
+            assert(hasType('ssn'), 'Parser: detects SSN/Tax ID field');
+            assert(hasType('money'), 'Parser: detects money field');
+
+            // 4. Parser fallback when no fields are found.
+            const emptyParsed = B.parseDocumentText('Just some prose. Nothing fillable here.');
+            assert(emptyParsed.fields.length === 3, 'Parser: falls back to name/sig/date when no fields detected', `got ${emptyParsed.fields.length}`);
+            assert(emptyParsed.fields.every(f => f.id && f.label && f.type), 'Parser: fallback fields have id/label/type');
+
+            // 5. Parser deduplication.
+            const dupDoc = 'Signature: ____\nSignature: ____\nSignature: ____\nDate: ____\nDate: ____';
+            const dupParsed = B.parseDocumentText(dupDoc);
+            const sigCount = dupParsed.fields.filter(f => f.type === 'signature').length;
+            const dateCount = dupParsed.fields.filter(f => f.type === 'date').length;
+            assert(sigCount === 1, 'Parser: de-duplicates repeated signature fields', `got ${sigCount}`);
+            assert(dateCount === 1, 'Parser: de-duplicates repeated date fields', `got ${dateCount}`);
+
+            // 6. renderMarkdown — writes into the iframe DOM. We inspect through DOM APIs (no innerHTML assignment here).
+            const dangerous = `# Hello
+
+This is **markdown**.
+
+- item one
+- item two
+
+\`\`\`js
+const x = 42;
+\`\`\`
+
+<script>window.__XSS_FIRED__ = true;<\/script>
+<img src="x" onerror="window.__XSS_IMG__ = true" />
+`;
+            window.__XSS_FIRED__ = false;
+            window.__XSS_IMG__ = false;
+            let mdOutputEl = null;
+            try {
+                B.renderMarkdown(dangerous, 'sample.md');
+                mdOutputEl = win.document.getElementById('mdOutput');
+                record('Markdown: renderMarkdown() runs without throwing', 'pass');
+            } catch (err) {
+                record('Markdown: renderMarkdown() runs without throwing', 'fail', err.message);
+            }
+
+            if (mdOutputEl) {
+                const h1 = mdOutputEl.querySelector('h1');
+                assert(h1 && /hello/i.test(h1.textContent), 'Markdown: renders heading');
+                assert(!!mdOutputEl.querySelector('strong'), 'Markdown: renders bold');
+                assert(!!mdOutputEl.querySelector('ul, li'), 'Markdown: renders list');
+                assert(!!mdOutputEl.querySelector('pre code'), 'Markdown: renders code block');
+                assert(!mdOutputEl.querySelector('script'), 'Sanitize: strips inline <script>');
+
+                // Check that no surviving element has an onerror attribute.
+                let onerrorFound = false;
+                mdOutputEl.querySelectorAll('*').forEach(el => {
+                    if (el.hasAttribute && el.hasAttribute('onerror')) onerrorFound = true;
+                });
+                assert(!onerrorFound, 'Sanitize: strips onerror= handler');
+
+                // The script should not have executed in either window.
+                await new Promise(r => setTimeout(r, 150));
+                assert(window.__XSS_FIRED__ === false && win.__XSS_FIRED__ !== true, 'Sanitize: injected script did not execute');
+                assert(window.__XSS_IMG__ === false && win.__XSS_IMG__ !== true, 'Sanitize: onerror handler did not fire');
+
+                // Mirror the rendered (already sanitized) DOM into the sample panel by cloning nodes.
+                const panel = document.getElementById('mdSample');
+                clearChildren(panel);
+                mdOutputEl.childNodes.forEach(n => panel.appendChild(n.cloneNode(true)));
+            }
+
+            // 7. Email / usage / paywall state.
+            const iframeStorage = win.localStorage;
+            const emailKey = B.CONFIG.STORAGE_KEYS.email;
+            const usageKey = B.CONFIG.STORAGE_KEYS.usage;
+            const subKey = B.CONFIG.STORAGE_KEYS.subscribed;
+            iframeStorage.removeItem(emailKey);
+            iframeStorage.removeItem(usageKey);
+            iframeStorage.removeItem(subKey);
+            assert(B.getEmail() === '', 'Gate: getEmail() empty after clearing storage');
+            assert(B.isSubscribed() === false, 'Gate: isSubscribed() false after clearing storage');
+
+            const usage0 = B.getUsage();
+            assert(typeof usage0 === 'object' && typeof usage0.count === 'number', 'Gate: getUsage() returns a shape with count');
+
+            iframeStorage.setItem(emailKey, 'tester@example.com');
+            assert(B.getEmail() === 'tester@example.com', 'Gate: getEmail() reads persisted value');
+
+            iframeStorage.setItem(subKey, '1');
+            assert(B.isSubscribed() === true, 'Gate: isSubscribed() true after paywall unlock flag');
+            iframeStorage.removeItem(subKey);
+            iframeStorage.removeItem(emailKey);
+
+            // 8. DOM smoke: landing page expected elements exist.
+            const landingModes = win.document.querySelectorAll('[data-mode]');
+            assert(landingModes.length >= 2, 'UI: landing page exposes mode cards', `found ${landingModes.length}`);
+            assert(!!win.document.querySelector('[data-mode="markdown"]'), 'UI: markdown mode card is present');
+            assert(!!win.document.querySelector('[data-mode="document"]'), 'UI: document mode card is present');
+
+            // 9. External deps loaded in the iframe.
+            assert(!!win.pdfjsLib, 'Deps: PDF.js loaded');
+            assert(!!win.marked, 'Deps: marked loaded');
+            assert(!!win.DOMPurify, 'Deps: DOMPurify loaded');
+            assert(!!win.hljs, 'Deps: highlight.js loaded');
+            assert(!!win.mammoth, 'Deps: mammoth loaded');
+            assert(!!win.PDFLib, 'Deps: pdf-lib loaded');
+
+            // 10. TTS feasibility (non-fatal).
+            if ('speechSynthesis' in win) {
+                record('TTS: speechSynthesis available in iframe', 'pass');
+            } else {
+                record('TTS: speechSynthesis available in iframe', 'skip', 'Browser does not expose speechSynthesis');
+            }
+
+            finish();
+        }
+
+        function finish() {
+            const pass = results.filter(r => r.status === 'pass').length;
+            const fail = results.filter(r => r.status === 'fail').length;
+            const skip = results.filter(r => r.status === 'skip').length;
+            const total = results.length;
+            const pct = (pass + fail) === 0 ? 0 : Math.round((pass / (pass + fail)) * 100);
+
+            clearChildren(summaryEl);
+            const wrap = document.createElement('div');
+            wrap.className = 'text-lg';
+
+            function span(cls, text) {
+                const s = document.createElement('span');
+                s.className = cls;
+                s.textContent = text;
+                return s;
+            }
+
+            wrap.appendChild(span('result-pass font-bold', pass + ' passed'));
+            wrap.appendChild(document.createTextNode(' · '));
+            wrap.appendChild(span('result-fail font-bold', fail + ' failed'));
+            wrap.appendChild(document.createTextNode(' · '));
+            wrap.appendChild(span('result-skip font-bold', skip + ' skipped'));
+            wrap.appendChild(span('text-slate-400', ' · ' + total + ' total · ' + pct + '% healthy'));
+            summaryEl.appendChild(wrap);
+        }
+
+        function resetState() {
+            try {
+                Object.keys(localStorage).filter(k => k.startsWith('breanne.')).forEach(k => localStorage.removeItem(k));
+            } catch (_) {}
+            try {
+                const ifwin = document.getElementById('app').contentWindow;
+                Object.keys(ifwin.localStorage).filter(k => k.startsWith('breanne.')).forEach(k => ifwin.localStorage.removeItem(k));
+            } catch (_) {}
+            summaryEl.textContent = 'Local state cleared. Click "Run tests" to re-run.';
+        }
+
+        document.getElementById('runBtn').addEventListener('click', runTests);
+        document.getElementById('resetBtn').addEventListener('click', resetState);
+
+        // Auto-run once the iframe loads.
+        window.addEventListener('load', () => {
+            setTimeout(runTests, 500);
+        });
+    </script>
+</body>
+</html>
