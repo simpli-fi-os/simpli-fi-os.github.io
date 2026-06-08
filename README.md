@@ -55,7 +55,6 @@ The studio works across a modern, production-grade stack:
 Simpli-FI OS is the creation of **Benjamin "Hunter" Lott** — a Fire Captain with the City of Denton, TX, a Registered Investment Adviser, and a builder.
 
 - Fire Captain, City of Denton
-- Principal, Simpli-FI Alpha LLC (RIA)
 - Father of four
 - Denton, Texas
 
@@ -88,7 +87,6 @@ npx serve .
 | [the-stewardship-initiative](https://github.com/simpli-fi-os/the-stewardship-initiative) | Skills directory for churches |
 | [madelocalco](https://github.com/simpli-fi-os/madelocalco) | Search engine for local goods |
 | [simpli-fi-admin](https://github.com/simpli-fi-os/simpli-fi-admin) | Compliance engine for RIAs |
-| [simpli-fi-alpha](https://github.com/simpli-fi-os/simpli-fi-alpha) | Simpli-FI Alpha LLC |
 | [cards](https://github.com/simpli-fi-os/cards) | ID Cards |
 | [assets](https://github.com/simpli-fi-os/assets) | Shared assets |
 | [breanne](https://github.com/simpli-fi-os/breanne) | Document reader and generator |
