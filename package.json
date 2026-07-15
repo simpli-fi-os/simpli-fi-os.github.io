@@ -1,0 +1,14 @@
+{
+  "name": "simpli-fi-os-public-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "build": "node scripts/check-family-brand.mjs",
+    "verify:family:production": "node scripts/verify-family-production.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
