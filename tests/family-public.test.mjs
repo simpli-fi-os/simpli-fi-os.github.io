@@ -60,6 +60,8 @@ test('every static HTML route declares its direct trailing-slash production URL'
     ['family/index.html', 'https://simpli-fi-os.com/family/'],
     ['family/support/index.html', 'https://simpli-fi-os.com/family/support/'],
     ['family/privacy/index.html', 'https://simpli-fi-os.com/family/privacy/'],
+    ['family/security/index.html', 'https://simpli-fi-os.com/family/security/'],
+    ['family/terms/index.html', 'https://simpli-fi-os.com/family/terms/'],
     ['family/join/index.html', 'https://simpli-fi-os.com/family/join/'],
   ])
 
@@ -119,4 +121,21 @@ test('Vercel serves Family routes with canonical redirects and release security 
   const associationHeaders = headersBySource.get('/.well-known/(.*)')
   assert.match(associationHeaders?.get('content-type') ?? '', /^application\/json/)
   assert.equal(associationHeaders?.get('x-content-type-options'), 'nosniff')
+
+  const securityTxtHeaders = headersBySource.get('/.well-known/security.txt')
+  assert.match(securityTxtHeaders?.get('content-type') ?? '', /^text\/plain/)
+})
+
+test('legal surfaces name the exact operator and expose complete user controls', async () => {
+  const privacy = await readFile('family/privacy/index.html', 'utf8')
+  const terms = await readFile('family/terms/index.html', 'utf8')
+  const security = await readFile('family/security/index.html', 'utf8')
+
+  assert.match(privacy, /Simpli-FI OS LLC, a Texas limited liability company/)
+  assert.match(privacy, /Your choices, rights, and appeals/)
+  assert.match(terms, /Denton County, Texas/)
+  assert.match(terms, /at least 13 years old/)
+  assert.match(terms, /Apple’s Standard Licensed Application End User License Agreement/)
+  assert.match(security, /does not claim that household content is end-to-end encrypted/)
+  assert.match(security, /Report a suspected vulnerability/)
 })

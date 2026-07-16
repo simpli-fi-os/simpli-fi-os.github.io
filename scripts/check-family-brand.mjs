@@ -11,12 +11,16 @@ const pages = [
   'family/index.html',
   'family/support/index.html',
   'family/privacy/index.html',
+  'family/security/index.html',
+  'family/terms/index.html',
   'family/join/index.html',
 ]
 const canonicalRoutes = new Map([
   ['family/index.html', 'https://simpli-fi-os.com/family/'],
   ['family/support/index.html', 'https://simpli-fi-os.com/family/support/'],
   ['family/privacy/index.html', 'https://simpli-fi-os.com/family/privacy/'],
+  ['family/security/index.html', 'https://simpli-fi-os.com/family/security/'],
+  ['family/terms/index.html', 'https://simpli-fi-os.com/family/terms/'],
   ['family/join/index.html', 'https://simpli-fi-os.com/family/join/'],
 ])
 
@@ -131,6 +135,24 @@ if (clearIndex < 0 || renderIndex < clearIndex) {
 const privacy = await readFile('family/privacy/index.html', 'utf8').catch(() => '')
 for (const disclosure of ['Approximate location for weather', 'Adult-only finance and email summaries', 'age 13 or older']) {
   if (!privacy.includes(disclosure)) findings.push(`privacy policy is missing disclosure: ${disclosure}`)
+}
+if (!privacy.includes('Simpli-FI OS LLC, a Texas limited liability company')) {
+  findings.push('privacy policy must identify the exact operating entity')
+}
+
+const terms = await readFile('family/terms/index.html', 'utf8').catch(() => '')
+for (const disclosure of ['Simpli-FI OS LLC', 'Denton County, Texas', 'at least 13 years old', 'household records', 'Apple’s Standard Licensed Application End User License Agreement']) {
+  if (!terms.includes(disclosure)) findings.push(`terms are missing required language: ${disclosure}`)
+}
+
+const security = await readFile('family/security/index.html', 'utf8').catch(() => '')
+for (const disclosure of ['does not claim that household content is end-to-end encrypted', 'Report a suspected vulnerability', 'Simpli-FI OS LLC']) {
+  if (!security.includes(disclosure)) findings.push(`security page is missing required language: ${disclosure}`)
+}
+
+const securityTxt = await readFile('.well-known/security.txt', 'utf8').catch(() => '')
+for (const field of ['Contact:', 'Expires:', 'Canonical:', 'Policy:']) {
+  if (!securityTxt.includes(field)) findings.push(`security.txt is missing ${field}`)
 }
 
 const support = await readFile('family/support/index.html', 'utf8').catch(() => '')

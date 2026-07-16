@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; connect-src 'none'; frame-ancestors 'none'; img-src 'self'; object-src 'none'; script-src 'none'; style-src 'self'; form-action 'none'">
+  <meta name="description" content="Security and data practices for Simpli-FI Family.">
+  <link rel="canonical" href="https://simpli-fi-os.com/family/security/">
+  <link rel="icon" href="/family/assets/app-icon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/family/assets/app-icon.png">
+  <link rel="stylesheet" href="/family/assets/family.css">
+  <title>Security &amp; Data Practices — Simpli-FI Family</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="nav-shell">
+      <a class="brand" href="/family/" aria-label="Simpli-FI Family home">
+        <img src="/family/assets/app-icon.png" alt="" width="46" height="46">
+        <span>Simpli-FI Family</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="/family/">Overview</a>
+        <a href="/family/privacy/">Privacy</a>
+        <a href="/family/security/" aria-current="page">Security</a>
+        <a href="/family/terms/">Terms</a>
+        <a href="/family/support/">Support</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <header class="page-intro">
+      <div class="section-shell">
+        <div>
+          <p class="eyebrow">Security &amp; Data Practices</p>
+          <h1>Private by structure, not by slogan.</h1>
+          <p class="legal-meta">Last reviewed July 15, 2026</p>
+        </div>
+        <div class="page-intro-copy">
+          <p>A plain-language overview of how Simpli-FI Family limits access, protects household commands, and responds to security reports.</p>
+        </div>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="section-shell legal-layout">
+        <nav class="side-nav" aria-label="Security sections">
+          <strong>On this page</strong>
+          <a href="#model">Security model</a>
+          <a href="#access">Identity and access</a>
+          <a href="#commands">Commands and timers</a>
+          <a href="#minimization">Data minimization</a>
+          <a href="#devices">Devices and invitations</a>
+          <a href="#providers">Providers and transport</a>
+          <a href="#responsibility">Your role</a>
+          <a href="#report">Report a vulnerability</a>
+          <a href="#response">Incident response</a>
+        </nav>
+
+        <article class="legal-copy">
+          <section id="model">
+            <h2>Our security model</h2>
+            <p>Simpli-FI Family is operated by Simpli-FI OS LLC. The Service is designed for private, invitation-based households, not public profiles or open discovery. We treat household identity, task, timer, reward, finance-summary, and email-summary information as confidential.</p>
+            <p>Security is a continuing process, not a guarantee. No method of storage or transmission is completely secure. This page describes safeguards the Service is designed to use; it does not promise immunity from every failure or attack and does not claim that household content is end-to-end encrypted.</p>
+          </section>
+
+          <section id="access">
+            <h2>Identity and household access</h2>
+            <ul>
+              <li>Adults authenticate with Sign in with Apple or an expressly authorized review-access method.</li>
+              <li>Dependents are linked through short-lived, single-use, adult-managed invitations and cannot publicly self-register.</li>
+              <li>Authenticated role and household checks are designed to restrict records to the relevant household and permitted member.</li>
+              <li>Household adults can revoke dependent-device access, and account deletion is available in the app.</li>
+              <li>Production admission is gated on separate release and development identifiers and backends so test data is not intentionally mixed with release household data.</li>
+            </ul>
+          </section>
+
+          <section id="commands">
+            <h2>Server-authoritative commands and timers</h2>
+            <p>Assignment transitions, timer changes, completion review, and reward posting are designed to go through authorized server commands rather than unrestricted client writes. Commands include unique request identifiers so safe retries can be recognized, and the service checks permitted role, household, revision, and state transitions.</p>
+            <p>Timer displays derive from stored authoritative timestamps rather than trusting a device to synchronize every second. This reduces device-clock dependence but does not make a timer safety-critical, payroll-grade, or guaranteed to update instantly. Offline actions may wait locally and reconcile when connectivity returns.</p>
+          </section>
+
+          <section id="minimization">
+            <h2>Data minimization</h2>
+            <ul>
+              <li>Notification previews are designed not to include task titles, private notes, names, or reward details.</li>
+              <li>Operational logs and diagnostics must not include task text, real names, rewards, connected-email content, or household details.</li>
+              <li>The first release does not request bank credentials, payment-card data, contacts, photos, retained microphone recordings, background location, HealthKit data, clinical records, biometrics, or medical measurements. User-created fitness and nutrition plans remain private Household Content.</li>
+              <li>Weather requests reduce location precision on the device and do not create a household location history.</li>
+              <li>The connected-email dashboard, when enabled by an adult, is limited to the small metadata set described in the <a href="/family/privacy/">Privacy Policy</a> and does not display message bodies or attachments.</li>
+              <li>Public Family pages contain no advertising, product analytics, or third-party font scripts.</li>
+            </ul>
+          </section>
+
+          <section id="devices">
+            <h2>Devices, Watch, and invitations</h2>
+            <p>The 1.0 Apple Watch experience uses the paired iPhone for initial authentication and authoritative synchronization. Watch and phone commands are scoped to the signed-in account and current household binding. Signing out, deleting an account, or switching accounts is designed to clear private task state and end active app surfaces on that device.</p>
+            <p>Invitation links contain an expiring token. When the installed app does not open directly, the fallback page removes the token from browser history before displaying invitation state and does not place it in browser storage, analytics, console output, or an onward link. Recipients should still treat every invitation as confidential.</p>
+          </section>
+
+          <section id="providers">
+            <h2>Providers, encryption, and app integrity</h2>
+            <p>We use established providers, including Apple, Firebase, Google Cloud, and Vercel, for operating-system services, authentication support, database and function hosting, notification routing, and public-page delivery. Production admission requires app-integrity checks to be configured and verified. Network connections to those services use encrypted transport where supported and required by the platform and provider.</p>
+            <p>Provider access is limited according to operational need and applicable service controls. We review production dependencies, privacy manifests, entitlements, and release configuration before submission. Provider safeguards reduce risk but do not eliminate it.</p>
+          </section>
+
+          <section id="responsibility">
+            <h2>Your part in household security</h2>
+            <ul>
+              <li>Use a protected Apple Account and device passcode, and keep supported operating-system updates installed.</li>
+              <li>Share invitations only with the intended person and never post an invitation or access code publicly.</li>
+              <li>Revoke a lost, sold, repaired, or shared device promptly.</li>
+              <li>Do not put passwords, access codes, government identifiers, bank credentials, medical records, or unnecessary sensitive information in tasks or support messages.</li>
+              <li>Contact us promptly if a household member, role, assignment, or device appears unfamiliar.</li>
+            </ul>
+          </section>
+
+          <section id="report">
+            <h2>Report a suspected vulnerability</h2>
+            <p>Email <a href="mailto:ready@simpli-fi-os.com?subject=Simpli-FI%20Family%20security%20report">ready@simpli-fi-os.com</a> with the subject “Simpli-FI Family security report.” Include the affected surface, a concise reproduction description, the potential impact, and a safe way to contact you. Do not include credentials, invitation tokens, private Household Content, or another person’s data.</p>
+            <p>To protect users while investigating:</p>
+            <ul>
+              <li>use only accounts and synthetic data you are authorized to test;</li>
+              <li>do not access, change, retain, or disclose another person’s information;</li>
+              <li>do not perform denial-of-service, spam, social engineering, physical intrusion, or destructive testing;</li>
+              <li>stop testing when you encounter private data or could affect service availability; and</li>
+              <li>allow a reasonable period for investigation and remediation before public disclosure.</li>
+            </ul>
+            <p>We do not currently offer a bug bounty or promise payment. We will make a good-faith effort to acknowledge a credible report and keep the reporter informed when practical. These guidelines do not authorize access that would otherwise be unlawful or waive any rights or remedies.</p>
+          </section>
+
+          <section id="response">
+            <h2>Incident response and questions</h2>
+            <p>We assess credible reports, limit exposure, preserve appropriate evidence, remediate the issue, and notify affected people or authorities when required by law. The timing and detail of communications depend on the nature of the incident, safety, legal obligations, and the need not to create additional risk.</p>
+            <p>For a privacy-rights or deletion request, use the process in the <a href="/family/privacy/">Privacy Policy</a>. For account or product help, visit <a href="/family/support/">Support</a>.</p>
+            <p>Simpli-FI OS LLC<br>Denton County, Texas, United States</p>
+          </section>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-shell">
+      <div class="footer-brand">
+        <strong>Simpli-FI Family</strong>
+        <p>Private family coordination, intentionally contained.</p>
+      </div>
+      <div>
+        <div class="footer-links">
+          <a href="/family/">Overview</a>
+          <a href="/family/privacy/">Privacy</a>
+          <a href="/family/terms/">Terms</a>
+          <a href="/family/support/">Support</a>
+          <a href="mailto:ready@simpli-fi-os.com">Contact</a>
+        </div>
+        <p class="footer-meta">© 2026 Simpli-FI OS LLC. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

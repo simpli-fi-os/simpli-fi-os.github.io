@@ -22,6 +22,8 @@ const routes = [
   { canonical: '/family/', alias: '/family' },
   { canonical: '/family/support/', alias: '/family/support' },
   { canonical: '/family/privacy/', alias: '/family/privacy' },
+  { canonical: '/family/security/', alias: '/family/security' },
+  { canonical: '/family/terms/', alias: '/family/terms' },
   {
     canonical: `/family/join/?token=${syntheticToken}`,
     alias: `/family/join?token=${syntheticToken}`,
@@ -112,6 +114,21 @@ try {
   if (!hasProductionInvite) findings.push('production AASA does not bind the release app to /family/join/?token=*')
 } catch (error) {
   findings.push(`production AASA could not be verified: ${error instanceof Error ? error.message : 'unknown error'}`)
+}
+
+try {
+  const { response, url } = await directFetch('/.well-known/security.txt')
+  if (response.status !== 200) findings.push(`${url} returned ${response.status}, expected 200`)
+  const contentType = response.headers.get('content-type') ?? ''
+  if (!contentType.toLowerCase().startsWith('text/plain')) {
+    findings.push(`${url} returned ${contentType || 'no Content-Type'}, expected text/plain`)
+  }
+  const body = await response.text()
+  for (const field of ['Contact:', 'Expires:', 'Canonical:', 'Policy:']) {
+    if (!body.includes(field)) findings.push(`${url} is missing ${field}`)
+  }
+} catch (error) {
+  findings.push(`production security.txt could not be verified: ${error instanceof Error ? error.message : 'unknown error'}`)
 }
 
 for (const warning of warnings) console.warn(`WARNING: ${warning}`)

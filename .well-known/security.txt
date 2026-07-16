@@ -1,0 +1,5 @@
+Contact: mailto:ready@simpli-fi-os.com
+Expires: 2027-07-16T04:59:59Z
+Preferred-Languages: en
+Canonical: https://simpli-fi-os.com/.well-known/security.txt
+Policy: https://simpli-fi-os.com/family/security/
