@@ -16,7 +16,7 @@ The files in this repository establish the public Family pages and the Apple App
 
 ## Hosting decision still required
 
-GitHub Pages commonly serves an extensionless `apple-app-site-association` file as `application/octet-stream` and does not provide repository-level custom response headers. Therefore this commit must not be labeled production-AASA-ready merely because the JSON file exists.
+The checked-in Vercel configuration rewrites Apple’s required extensionless URL to the canonical JSON source and adds release security headers. This still must not be labeled production-AASA-ready until the direct public response passes the production verifier.
 
 Before live approval, place these routes behind a header-capable static host or verified edge/proxy rule. Keep the canonical paths and AASA content unchanged unless the app entitlement and release verifier are updated in the same reviewed change.
 
