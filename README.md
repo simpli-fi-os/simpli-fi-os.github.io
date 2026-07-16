@@ -76,6 +76,35 @@ open index.html
 npx serve .
 ```
 
+## Simpli-FI Family public routes
+
+The App Store support and universal-link surface lives at:
+
+- `/family/`
+- `/family/support/`
+- `/family/privacy/`
+- `/family/join/?token=<short-lived-invite>`
+- `/.well-known/apple-app-site-association`
+
+The invitation page removes the query from browser history before rendering state. Its client code never places the token in the DOM, browser storage, analytics, console output, or a link attribute. Invitations must remain short-lived and single-use because an uninstalled-app fallback still reaches the web host as an HTTPS request. The installed app performs the authoritative token validation and claim.
+
+Run the dependency-free local gates with:
+
+```bash
+npm test
+npm run build
+```
+
+After an approved deployment, verify the real origin with:
+
+```bash
+npm run verify:family:production -- https://simpli-fi-os.com
+```
+
+The trailing-slash HTML URLs above are canonical because each route is published from a directory `index.html`; each must return `200` directly. Slashless aliases may redirect only to their matching trailing-slash URL, preserving the query on the invitation route.
+
+**Production associated-domains status: HOLD.** This static commit proves the route and AASA content contract only. GitHub Pages commonly serves the extensionless association file as `application/octet-stream`, which does not satisfy this release gate. A header-capable edge host or a verified proxy rule must serve the exact file directly as `application/json` before live approval. The production verifier intentionally fails on an AASA redirect or incorrect MIME type and reports missing edge-level `nosniff`, CSP, referrer, and private-cache headers. See [FAMILY-PUBLIC-RELEASE-GATE.md](FAMILY-PUBLIC-RELEASE-GATE.md).
+
 ---
 
 ## All Repositories
