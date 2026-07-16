@@ -41,7 +41,7 @@ test('builds only the exact app invitation URL shape', () => {
 
 test('AASA binds only the production app to the exact join path', async () => {
   const association = JSON.parse(
-    await readFile('.well-known/apple-app-site-association', 'utf8'),
+    await readFile('.well-known/apple-app-site-association.json', 'utf8'),
   )
   const details = association.applinks?.details
   assert.equal(Array.isArray(details), true)
@@ -87,4 +87,36 @@ test('join page clears the URL before rendering invitation state and never store
   assert.ok(firstResourceIndex > referrerIndex, 'referrer policy must precede every subresource request')
   assert.doesNotMatch(source, /localStorage|sessionStorage|document\.cookie|sendBeacon|fetch\(|XMLHttpRequest|console\./)
   assert.doesNotMatch(source, /\.innerHTML|\.outerHTML|\.dataset/)
+})
+
+test('Vercel serves Family routes with canonical redirects and release security headers', async () => {
+  const config = JSON.parse(await readFile('vercel.json', 'utf8'))
+  assert.equal(config.trailingSlash, true)
+  assert.deepEqual(config.rewrites, [{
+    source: '/.well-known/apple-app-site-association',
+    destination: '/.well-known/apple-app-site-association.json',
+  }])
+
+  const headersBySource = new Map(
+    config.headers.map(rule => [
+      rule.source,
+      new Map(rule.headers.map(header => [header.key.toLowerCase(), header.value])),
+    ]),
+  )
+
+  const globalHeaders = headersBySource.get('/(.*)')
+  assert.equal(globalHeaders?.get('x-content-type-options'), 'nosniff')
+
+  const familyHeaders = headersBySource.get('/family/(.*)')
+  assert.equal(familyHeaders?.get('referrer-policy'), 'no-referrer')
+  assert.equal(familyHeaders?.get('x-content-type-options'), 'nosniff')
+  assert.match(familyHeaders?.get('content-security-policy') ?? '', /frame-ancestors 'none'/)
+
+  const joinHeaders = headersBySource.get('/family/join/(.*)')
+  assert.match(joinHeaders?.get('cache-control') ?? '', /no-store/)
+  assert.match(joinHeaders?.get('content-security-policy') ?? '', /base-uri 'none'/)
+
+  const associationHeaders = headersBySource.get('/.well-known/(.*)')
+  assert.match(associationHeaders?.get('content-type') ?? '', /^application\/json/)
+  assert.equal(associationHeaders?.get('x-content-type-options'), 'nosniff')
 })

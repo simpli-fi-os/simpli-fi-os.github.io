@@ -137,7 +137,7 @@ const support = await readFile('family/support/index.html', 'utf8').catch(() => 
 if (!support.includes('<strong>Settings</strong>')) findings.push('support page must match the release Settings tab')
 if (support.includes('<strong>More</strong>')) findings.push('support page still names the retired More tab')
 
-const association = JSON.parse(await readFile('.well-known/apple-app-site-association', 'utf8'))
+const association = JSON.parse(await readFile('.well-known/apple-app-site-association.json', 'utf8'))
 const details = association.applinks?.details ?? []
 const hasProductionInvite = details.some((detail) =>
   detail.appIDs?.includes('N8J5KA7B3N.com.simplifi.familyos')
