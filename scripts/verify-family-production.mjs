@@ -1,8 +1,19 @@
 #!/usr/bin/env node
 
+import { readFile } from 'node:fs/promises'
+import {
+  validateAssociationResponseHeaders,
+  validateExactFamilyAASA,
+  validateFamilyResponseHeaders,
+  validateJoinScriptSource,
+} from './family-production-security-contract.mjs'
+
 const baseURL = new URL(process.argv[2] ?? 'https://simpli-fi-os.com')
 const findings = []
-const warnings = []
+const expectedJoinScript = await readFile(
+  new URL('../family/join/join.js', import.meta.url),
+  'utf8',
+)
 
 if (baseURL.protocol !== 'https:') {
   findings.push('production verification requires an HTTPS origin')
@@ -17,18 +28,82 @@ async function directFetch(path) {
   return { response, url }
 }
 
-const syntheticToken = 'A'.repeat(43)
 const routes = [
   { canonical: '/family/', alias: '/family' },
   { canonical: '/family/support/', alias: '/family/support' },
   { canonical: '/family/privacy/', alias: '/family/privacy' },
   { canonical: '/family/security/', alias: '/family/security' },
   { canonical: '/family/terms/', alias: '/family/terms' },
-  {
-    canonical: `/family/join/?token=${syntheticToken}`,
-    alias: `/family/join?token=${syntheticToken}`,
-  },
+  { canonical: '/family/join/', alias: '/family/join' },
 ]
+
+const pageContracts = new Map([
+  ['/family/', {
+    required: [
+      'Built for private, adult-led households',
+      'Adults age 18 or older create households.',
+      'The first public release is coming to the U.S. App Store.',
+    ],
+    forbidden: [
+      'Built for invited households',
+      'Access is limited to invited households.',
+    ],
+  }],
+  ['/family/privacy/', {
+    required: [
+      'Effective July 18, 2026',
+      'The first public release is intended only for users in the United States.',
+      'An adult age 18 or older creates the household.',
+      'Simpli-FI Family 1.0 does not request location',
+      'Simpli-FI Family does not move funds',
+    ],
+    forbidden: [
+      'The first release is intended only for invited users',
+      'Adult-only finance and email summaries',
+      'Approximate location for weather',
+      'Connected email providers',
+    ],
+  }],
+  ['/family/terms/', {
+    required: [
+      'Effective July 18, 2026',
+      'The first public release is available only in the United States.',
+      'A household creator must be at least 18 years old.',
+      'Quest points, custom rewards, and money amounts are private household records.',
+    ],
+    forbidden: [
+      'available only to invited users',
+      'end an invite-only pilot',
+      'finance summaries',
+      'connected email providers',
+      'weather result',
+    ],
+  }],
+  ['/family/security/', {
+    required: [
+      'Last reviewed July 18, 2026',
+      'private, adult-led households',
+      'Public household creation requires an adult Sign in with Apple session',
+      'The first release does not request location',
+    ],
+    forbidden: [
+      'private, invitation-based households',
+      'connected-email dashboard',
+      'Weather requests reduce location precision',
+    ],
+  }],
+  ['/family/support/', {
+    required: [
+      'In the public release, an adult age 18 or older signs in with Apple',
+      'The first release does not permit linking a child under 13.',
+      'Money rewards are private household ledger promises only.',
+    ],
+    forbidden: [
+      'Access is limited to invited households.',
+      'Ask support to invite your household',
+    ],
+  }],
+])
 
 for (const { canonical } of routes) {
   try {
@@ -44,23 +119,22 @@ for (const { canonical } of routes) {
       findings.push(`${url} contains release-placeholder copy`)
     }
     const canonicalPath = new URL(canonical, baseURL).pathname
+    const pageContract = pageContracts.get(canonicalPath)
+    if (pageContract) {
+      for (const text of pageContract.required) {
+        if (!body.includes(text)) findings.push(`${url} is missing the Build 5 disclosure: ${text}`)
+      }
+      for (const text of pageContract.forbidden) {
+        if (body.includes(text)) findings.push(`${url} still contains superseded disclosure: ${text}`)
+      }
+    }
     if (!body.includes(`<link rel="canonical" href="${new URL(canonicalPath, baseURL.origin)}">`)) {
       findings.push(`${url} does not declare the direct trailing-slash canonical URL`)
     }
-    if (!(response.headers.get('x-content-type-options') ?? '').toLowerCase().includes('nosniff')) {
-      warnings.push(`${url} does not advertise X-Content-Type-Options: nosniff`)
-    }
-    if (!(response.headers.get('content-security-policy') ?? '').includes("frame-ancestors 'none'")) {
-      warnings.push(`${url} does not advertise a response-header CSP with frame-ancestors 'none'; meta CSP remains the document fallback`)
-    }
-    if (canonicalPath === '/family/join/') {
-      const cacheControl = response.headers.get('cache-control') ?? ''
-      if (!/\b(?:no-store|private)\b/i.test(cacheControl)) {
-        warnings.push(`${url} does not advertise private/no-store caching; confirm the production edge policy for invite fallbacks`)
-      }
-      if (!/^no-referrer(?:\s|,|$)/i.test(response.headers.get('referrer-policy') ?? '')) {
-        warnings.push(`${url} does not advertise Referrer-Policy: no-referrer as a response header; the page-level policy must remain before all subresources`)
-      }
+    for (const finding of validateFamilyResponseHeaders(response.headers, {
+      join: canonicalPath === '/family/join/',
+    })) {
+      findings.push(`${url}: ${finding}`)
     }
   } catch (error) {
     findings.push(`${new URL(canonical, baseURL)} could not be fetched: ${error instanceof Error ? error.message : 'unknown error'}`)
@@ -92,28 +166,35 @@ for (const { canonical, alias } of routes) {
 try {
   const { response, url } = await directFetch('/.well-known/apple-app-site-association')
   if (response.status !== 200) findings.push(`${url} returned ${response.status}, expected 200 without a redirect`)
-  const contentType = response.headers.get('content-type') ?? ''
-  if (!contentType.toLowerCase().startsWith('application/json')) {
-    findings.push(`${url} returned ${contentType || 'no Content-Type'}, expected application/json`)
-  }
-  if (!(response.headers.get('x-content-type-options') ?? '').toLowerCase().includes('nosniff')) {
-    warnings.push(`${url} does not advertise X-Content-Type-Options: nosniff`)
+  for (const finding of validateAssociationResponseHeaders(response.headers)) {
+    findings.push(`${url}: ${finding}`)
   }
   const body = await response.text()
   if (Buffer.byteLength(body) > 128 * 1024) findings.push('AASA exceeds Apple’s 128 KB uncompressed limit')
   const association = JSON.parse(body)
-  const details = association.applinks?.details ?? []
-  const hasProductionInvite = details.some(detail =>
-    detail.appIDs?.length === 1
-    && detail.appIDs[0] === 'N8J5KA7B3N.com.simplifi.familyos'
-    && detail.components?.some(component =>
-      component['/'] === '/family/join/'
-      && JSON.stringify(component['?']) === JSON.stringify({ token: '*' })
-    )
-  )
-  if (!hasProductionInvite) findings.push('production AASA does not bind the release app to /family/join/?token=*')
+  findings.push(...validateExactFamilyAASA(association))
 } catch (error) {
   findings.push(`production AASA could not be verified: ${error instanceof Error ? error.message : 'unknown error'}`)
+}
+
+try {
+  const { response, url } = await directFetch('/family/join/join.js')
+  if (response.status !== 200) findings.push(`${url} returned ${response.status}, expected 200`)
+  for (const finding of validateFamilyResponseHeaders(response.headers, {
+    join: true,
+    script: true,
+  })) {
+    findings.push(`${url}: ${finding}`)
+  }
+  const source = await response.text()
+  if (source !== expectedJoinScript) {
+    findings.push(`${url} bytes do not exactly match the reviewed release source`)
+  }
+  for (const finding of validateJoinScriptSource(source)) {
+    findings.push(`${url}: ${finding}`)
+  }
+} catch (error) {
+  findings.push(`production join.js could not be verified: ${error instanceof Error ? error.message : 'unknown error'}`)
 }
 
 try {
@@ -131,7 +212,6 @@ try {
   findings.push(`production security.txt could not be verified: ${error instanceof Error ? error.message : 'unknown error'}`)
 }
 
-for (const warning of warnings) console.warn(`WARNING: ${warning}`)
 if (findings.length > 0) {
   console.error('Family production route verification failed:')
   for (const finding of findings) console.error(`- ${finding}`)

@@ -8,9 +8,7 @@
         "components": [
           {
             "/": "/family/join/",
-            "?": {
-              "token": "*"
-            },
+            "#": "token=*",
             "comment": "Opens a short-lived Simpli-FI Family dependent-device invitation. The app validates the token before use."
           }
         ]

@@ -37,7 +37,7 @@
         <div>
           <p class="eyebrow">Security &amp; Data Practices</p>
           <h1>Private by structure, not by slogan.</h1>
-          <p class="legal-meta">Last reviewed July 15, 2026</p>
+          <p class="legal-meta">Last reviewed July 18, 2026</p>
         </div>
         <div class="page-intro-copy">
           <p>A plain-language overview of how Simpli-FI Family limits access, protects household commands, and responds to security reports.</p>
@@ -63,7 +63,7 @@
         <article class="legal-copy">
           <section id="model">
             <h2>Our security model</h2>
-            <p>Simpli-FI Family is operated by Simpli-FI OS LLC. The Service is designed for private, invitation-based households, not public profiles or open discovery. We treat household identity, task, timer, reward, finance-summary, and email-summary information as confidential.</p>
+            <p>Simpli-FI Family is operated by Simpli-FI OS LLC. The Service is designed for private, adult-led households, not public profiles or open discovery. We treat household identity, task, timer, and reward information as confidential.</p>
             <p>Security is a continuing process, not a guarantee. No method of storage or transmission is completely secure. This page describes safeguards the Service is designed to use; it does not promise immunity from every failure or attack and does not claim that household content is end-to-end encrypted.</p>
           </section>
 
@@ -74,7 +74,8 @@
               <li>Dependents are linked through short-lived, single-use, adult-managed invitations and cannot publicly self-register.</li>
               <li>Authenticated role and household checks are designed to restrict records to the relevant household and permitted member.</li>
               <li>Household adults can revoke dependent-device access, and account deletion is available in the app.</li>
-              <li>Production admission is gated on separate release and development identifiers and backends so test data is not intentionally mixed with release household data.</li>
+              <li>Public household creation requires an adult Sign in with Apple session, app-integrity validation, coarse age and legal attestations, replay controls, and server-authoritative membership creation.</li>
+              <li>Release and development identifiers and backends are separate so test data is not intentionally mixed with release household data.</li>
             </ul>
           </section>
 
@@ -88,10 +89,9 @@
             <h2>Data minimization</h2>
             <ul>
               <li>Notification previews are designed not to include task titles, private notes, names, or reward details.</li>
-              <li>Operational logs and diagnostics must not include task text, real names, rewards, connected-email content, or household details.</li>
-              <li>The first release does not request bank credentials, payment-card data, contacts, photos, retained microphone recordings, background location, HealthKit data, clinical records, biometrics, or medical measurements. User-created fitness and nutrition plans remain private Household Content.</li>
-              <li>Weather requests reduce location precision on the device and do not create a household location history.</li>
-              <li>The connected-email dashboard, when enabled by an adult, is limited to the small metadata set described in the <a href="/family/privacy/">Privacy Policy</a> and does not display message bodies or attachments.</li>
+              <li>Operational logs and diagnostics must not include task text, real names, rewards, or household details.</li>
+              <li>The first release does not request location, bank credentials, payment-card data, net-worth data, connected-email content, contacts, photos, retained microphone recordings, HealthKit or fitness data, clinical records, biometrics, or medical measurements.</li>
+              <li>Private cached household state and queued Watch commands use device-local protection and are cleared when account or household binding changes.</li>
               <li>Public Family pages contain no advertising, product analytics, or third-party font scripts.</li>
             </ul>
           </section>

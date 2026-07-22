@@ -1,27 +1,23 @@
 const TOKEN_PATTERN = /^[A-Za-z0-9_-]{32,200}$/
+const FRAGMENT_PATTERN = /^#token=([A-Za-z0-9_-]{32,200})$/
 
-export function invitationTokenFromSearch(search) {
-  const entries = [...new URLSearchParams(search).entries()]
-  if (entries.length !== 1 || entries[0][0] !== 'token') return null
-  return TOKEN_PATTERN.test(entries[0][1]) ? entries[0][1] : null
-}
-
-export function appInvitationURL(token) {
-  if (!TOKEN_PATTERN.test(token)) return null
-  return `simplififamily://join?token=${encodeURIComponent(token)}`
+export function invitationTokenFromFragment(fragment) {
+  const match = FRAGMENT_PATTERN.exec(fragment)
+  return match && TOKEN_PATTERN.test(match[1]) ? match[1] : null
 }
 
 function initializeInvitationPage() {
-  const originalSearch = window.location.search
+  const originalFragment = window.location.hash
 
-  // Remove the capability from browser history before changing visible state.
-  // The token stays in this function's closure only: never DOM, storage, logs, or analytics.
+  // URL fragments are never included in the HTTP request. Remove the capability
+  // from browser history before changing visible state. The token stays in this
+  // function's closure only: never DOM, storage, logs, or analytics.
   window.history.replaceState(null, '', window.location.pathname)
 
   const panel = document.querySelector('.join-panel')
   const message = document.querySelector('#join-message')
   const openButton = document.querySelector('#open-family-app')
-  const token = invitationTokenFromSearch(originalSearch)
+  const token = invitationTokenFromFragment(originalFragment)
 
   if (!panel || !message || !openButton) return
 
@@ -32,17 +28,11 @@ function initializeInvitationPage() {
   }
 
   message.textContent = 'This invitation is ready. Open it on the iPhone or iPad that will use this family profile.'
+  openButton.textContent = 'How to open securely'
   openButton.hidden = false
   openButton.addEventListener('click', () => {
-    const destination = appInvitationURL(token)
-    if (!destination) return
-
-    window.location.assign(destination)
-    window.setTimeout(() => {
-      if (document.visibilityState === 'visible') {
-        message.textContent = 'The app did not open. Install Simpli-FI Family, then ask the household adult for a fresh invitation.'
-      }
-    }, 1400)
+    message.textContent = 'Open the original HTTPS invitation again from Messages or Mail after Simpli-FI Family is installed. If it still does not open in the app, ask the household adult for a fresh invitation.'
+    openButton.hidden = true
   })
 }
 

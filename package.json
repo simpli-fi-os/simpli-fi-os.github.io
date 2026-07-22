@@ -9,6 +9,6 @@
     "verify:family:production": "node scripts/verify-family-production.mjs"
   },
   "engines": {
-    "node": ">=20"
+    "node": "22.16.0"
   }
 }

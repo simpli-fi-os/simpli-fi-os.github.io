@@ -38,7 +38,7 @@
         <div>
           <p class="eyebrow">Privacy policy</p>
           <h1>Family data should stay family data.</h1>
-          <p class="legal-meta">Effective July 15, 2026</p>
+          <p class="legal-meta">Effective July 18, 2026</p>
         </div>
         <div class="page-intro-copy">
           <p>This policy explains what Simpli-FI Family collects, why it is needed, and the controls available to adults and household members.</p>
@@ -66,40 +66,36 @@
           <section id="scope">
             <h2>Scope</h2>
             <p>This Privacy Policy applies to the Simpli-FI Family application and its related support pages. Simpli-FI Family is operated by Simpli-FI OS LLC, a Texas limited liability company based in Denton County, Texas, United States. In this policy, “Simpli-FI,” “we,” “us,” and “our” refer to Simpli-FI OS LLC.</p>
-            <p>Simpli-FI Family is an invitation-based family productivity service for task agreements, time budgeting, timers, household rewards, and personal history.</p>
-            <p>The first release is intended only for invited users in the United States.</p>
+            <p>Simpli-FI Family is a private, adult-led family productivity service for task agreements, time budgeting, timers, household rewards, and personal history.</p>
+            <p>The first public release is intended only for users in the United States. An adult age 18 or older creates the household. Dependents age 13 or older join through adult-managed access; there is no public dependent self-signup.</p>
             <p>The app is not a public social network, banking service, money-transfer service, or advertising platform.</p>
           </section>
 
           <section id="collect">
             <h2>Information we collect</h2>
             <h3>Account and household information</h3>
-            <p>When an adult signs in with Apple, we receive an Apple authentication credential and may receive a name and email address or Apple private-relay address. We create service identifiers needed to authenticate the account, authorize household access, and link invited dependents. For a linked dependent, we store a coarse 13-or-older eligibility band and the adult’s attestation metadata, not a birth date.</p>
+            <p>When an adult signs in with Apple, we receive an Apple authentication credential and may receive a name and email address or Apple private-relay address. We create service identifiers needed to authenticate the account, authorize household access, and link dependents. For a household creator, we store a coarse 18-or-older eligibility band. For a linked dependent, we store a coarse 13-or-older eligibility band and the adult’s attestation metadata. We do not collect a birth date.</p>
+            <p>Depending on the person’s device, Apple Account, and region, Apple may make age-assurance features available or require the Service to request a coarse age category. Apple may indicate that the category was self-declared, guardian-declared, or confirmed using a supported method. We use only the returned category and declaration or confirmation method to enforce eligibility. We do not store an exact age or birth date. If a required category is unavailable, declined, invalid, or indicates that the person is under 13, we do not create or link the account.</p>
+            <p>To confirm current App Store consent status, we verify a signed App Store transaction without retaining the signed payload or raw transaction identifier. We retain pseudonymous one-way transaction and account bindings, the App Store environment, consent status, and verification timestamps. Apple may send signed server notifications about that consent. If Apple reports that consent was rescinded, we revoke active service sessions and keep access blocked. A later signed transaction by itself does not restore access; restoration would require a separate platform signal and verification path that the Service supports.</p>
             <h3>Content you choose to create</h3>
-            <p>We store information needed for the features you use, including display names; task titles and categories; goals, projects, routines, and focus sessions; time budgets; due times; private notes; assignment responses; structured change requests; timer sessions; completion status; quest points; custom rewards; and household money-ledger entries.</p>
-            <p>If you choose to create fitness, exercise, meal-planning, nutrition, or hydration goals or tasks, we process that user-provided fitness and wellness information as private Household Content so it can appear in the relevant household plan. The first release does not connect to HealthKit or request clinical records, diagnoses, biometrics, medical measurements, or data from motion-and-fitness sensors.</p>
-            <h3>Adult-only finance and email summaries</h3>
-            <p>If a household adult uses the finance snapshot, we store the aggregate amounts that adult enters, such as total assets, liabilities, monthly income and expenses, debt progress, and subscription count. The snapshot does not require bank credentials, account numbers, card numbers, statements, or transactions.</p>
-            <p>If the connected-email summary is enabled and a household adult chooses to connect an inbox, we process the provider name, sender display name, subject, received time, and unread status needed to show up to three recent messages. The Family dashboard does not request or display message bodies, snippets, attachments, email addresses, or provider message identifiers. Provider authorization credentials are handled server-side and are not exposed to other household members.</p>
+            <p>We store information needed for the features you use, including display names; task titles and categories; goal-linked tasks; time budgets; due times; private notes; assignment responses; structured change requests; timer sessions; completion status; quest points; custom reward labels; and optional household money-reward amounts and currency codes.</p>
+            <p>A money reward is a private household allowance promise. Simpli-FI Family does not move funds or collect bank credentials, account numbers, card numbers, credit information, income, assets, debts, statements, or transactions.</p>
             <h3>Device and notification information</h3>
-            <p>If you enable relevant features, we process app-installation identifiers, push-notification tokens, Live Activity tokens, paired-device state, queued command identifiers, and limited operational information needed to deliver notifications and keep iPhone, iPad, and Apple Watch surfaces synchronized.</p>
-            <h3>Approximate location for weather</h3>
-            <p>If you choose “Use my location” on Home, the app requests location while in use, reduces the coordinate to neighborhood-scale precision on the device, and sends that reduced coordinate to Apple Weather so it can show today’s local conditions. Simpli-FI Family does not request background location or store a location history in the household service.</p>
+            <p>If you enable relevant features, we process app-installation and device identifiers, push-notification tokens, queued command identifiers, and limited operational information needed to deliver notifications and synchronize supported iPhone, iPad, and paired Apple Watch surfaces. Active timer surfaces are updated locally; we do not request or upload an ActivityKit push token.</p>
             <h3>Reliability and diagnostic information</h3>
-            <p>Bundled Firebase and Google components may process limited, pseudonymous or non-linked installation, messaging, transport, and diagnostic information for app functionality, reliability, and operational analytics. We do not use this information to profile household content, advertise to family members, or track people across other companies’ apps or websites.</p>
+            <p>Bundled Firebase and Google components may process limited, pseudonymous or non-linked installation, messaging, transport, and diagnostic information for app functionality, reliability, and operational diagnostics. We do not use this information to profile household content, advertise to family members, or track people across other companies’ apps or websites.</p>
             <h3>Support communications</h3>
             <p>If you contact us, we receive the information you include in the message. Please do not send passwords, access codes, private task notes, or unnecessary information about a child.</p>
-            <p>Simpli-FI Family does not request contacts, photos, retained microphone recordings, HealthKit data, clinical records, diagnoses, biometrics, medical measurements, bank credentials, account numbers, or payment-card details for its 1.0 features. Dictation, keyboard, and Scribble input are provided through Apple’s system interfaces and are subject to your device and Apple settings.</p>
+            <p>Simpli-FI Family 1.0 does not request location, contacts, photos, retained microphone recordings, HealthKit or fitness data, clinical records, diagnoses, biometrics, medical measurements, connected-email content, net-worth or banking data, bank credentials, account numbers, or payment-card details. Dictation, keyboard, and Scribble input are provided through Apple’s system interfaces and are subject to your device and Apple settings.</p>
           </section>
 
           <section id="use">
             <h2>How we use information</h2>
             <p>We use the information described above to:</p>
             <ul>
-              <li>authenticate adults and enforce invitation-based household access;</li>
+              <li>authenticate adults, create one adult-led household, and enforce private household access;</li>
               <li>create and synchronize task agreements, timers, completion reviews, and household reward records;</li>
               <li>deliver requested notifications and active-timer surfaces;</li>
-              <li>show adult-requested finance snapshots, connected-email metadata, and local weather;</li>
               <li>prevent unauthorized access, replayed commands, abuse, and cross-household data exposure;</li>
               <li>respond to support, deletion, privacy, and security requests; and</li>
               <li>maintain the reliability, security, and accessibility of the service using privacy-minimized operational information.</li>
@@ -111,14 +107,12 @@
             <h2>Service providers and sharing</h2>
             <p>We disclose information only as needed to operate the service, comply with law, or protect people and the service.</p>
             <h3>Apple</h3>
-            <p>Apple provides Sign in with Apple, Apple Weather, App Store distribution, push-notification delivery, device operating systems, and system input surfaces. Apple processes information under its own policies and your Apple settings.</p>
+            <p>Apple provides Sign in with Apple, App Store distribution, push-notification delivery, device operating systems, and system input surfaces. Apple processes information under its own policies and your Apple settings.</p>
             <h3>Firebase and Google Cloud</h3>
             <p>Firebase and Google Cloud provide authentication support, database storage, server functions, app-integrity checks, notification routing, and limited operational diagnostics. Data is processed for Simpli-FI under applicable service terms and access controls.</p>
             <h3>Public pages, invitation fallback, and support email</h3>
             <p>The public Family, support, privacy, terms, and security pages are static files delivered through Vercel and related website-hosting and network providers. The pages do not include analytics, advertising, or third-party font scripts. Basic requests, including an IP address, device and browser information, and the requested URL, may be processed in standard delivery and security logs under those providers’ service terms.</p>
-            <p>If an invitation does not open directly in the installed app, its short-lived token reaches the web host as part of the requested URL. The invitation page removes the query from browser history before showing invitation state and does not place the token in the page, browser storage, analytics, console output, or a link. Invitation tokens are designed to expire and work once. If you email support, your email provider and ours process the message for delivery and response.</p>
-            <h3>Connected email providers</h3>
-            <p>If connected-email summaries are enabled and an adult authorizes a provider, that provider processes the authorization and metadata request under its own terms and privacy policy. Simpli-FI requests only the limited permission needed for the enabled summary and does not use connected email for advertising.</p>
+            <p>If an invitation does not open directly in the installed app, its short-lived token stays in the URL fragment, which browsers do not include in the request to our web host. The invitation page removes the fragment from browser history before showing invitation state and does not place the token in the page, browser storage, analytics, console output, or a link. Invitation tokens are designed to expire and work once. If you email support, your email provider and ours process the message for delivery and response.</p>
             <h3>Legal and safety disclosures</h3>
             <p>We may preserve or disclose limited information if reasonably necessary to comply with law, respond to lawful process, enforce our agreements, investigate security incidents, or protect the rights and safety of users or others.</p>
           </section>
@@ -140,7 +134,8 @@
             <h2>Retention and deletion</h2>
             <p>We retain account and household information while the account is active and as needed to provide the service, secure it, meet legal obligations, and resolve disputes. Adults can start account or household deletion from the app.</p>
             <p>A successful primary-owner deletion revokes household access and removes the active household tree, managed-dependent accounts, and owner account as part of the server request. A non-owner adult deletion removes that person’s account and membership without deleting records the household must retain as its shared task history. A dependent self-deletion removes the linked login, household membership records, and dependent account; an adult may create a new managed profile later if appropriate.</p>
-            <p>A pseudonymous deletion receipt, keyed by a one-way user hash and containing the deletion mode, relevant household identifiers, and request state, may be retained for up to 30 days to make interrupted requests safe to retry. Versioned legal-acknowledgement receipts contain the account identifier, policy versions, acceptance flow, app version/build, server acceptance time, and—when applicable—the managed profile and authorizing adult identifiers. Those receipts may be retained for up to four years to establish consent and enforce the agreement.</p>
+            <p>A minimal pseudonymous binding between the active account and its Sign in with Apple identity is retained while the account remains active and until deletion converges. It is used to prevent identity replay or accidental recreation and does not contain household task text. A pseudonymous deletion receipt, keyed by a one-way user hash and containing the deletion mode, relevant household identifiers, and request state, may be retained for up to 30 days to make interrupted requests safe to retry. Versioned legal-acknowledgement receipts contain the account identifier, policy versions, acceptance flow, app version/build, server acceptance time, and—when applicable—the managed profile and authorizing adult identifiers. Those receipts may be retained for up to four years to establish consent and enforce the agreement.</p>
+            <p>Account-linked App Store transaction bindings and consent-revocation records are removed when account deletion converges. Pseudonymous consent-state and notification receipts may be retained only as reasonably needed to prevent replay, document consent changes, meet legal obligations, and resolve disputes. Those receipts do not contain the account identifier, signed transaction or notification payload, or raw transaction or notification identifiers.</p>
             <p>Privacy-minimized security, authorization, command, notification, and reliability records are retained only for the period reasonably needed for those purposes, legal compliance, or dispute resolution. Residual copies may remain temporarily in protected provider backups until those backups rotate under the provider’s standard schedule.</p>
           </section>
 
@@ -156,7 +151,7 @@
             <p>Depending on where you live, you may have the right to confirm whether we process your personal information; access, correct, delete, or obtain a portable copy of it; and opt out of a sale, targeted advertising, or profiling that produces legal or similarly significant effects. We do not sell personal information or use it for targeted advertising or this kind of profiling. We will not discriminate against you for exercising a privacy right.</p>
             <p>To exercise a right, email <a href="mailto:ready@simpli-fi-os.com?subject=Simpli-FI%20Family%20privacy%20request">ready@simpli-fi-os.com</a> and identify the request as relating to Simpli-FI Family. We will acknowledge and respond within the period required by applicable law. We may need to verify the requester and the requester’s authority over the household before acting. A teen may submit a request about the teen’s own account. A household adult or another authorized agent may submit a request when applicable law and the person’s authority permit, but we may ask for proof of authority and direct identity confirmation.</p>
             <p>If we deny a privacy request, reply to our decision within 30 days with the word “Appeal” in the subject line and explain why you believe the decision should be reconsidered. We will review the appeal and explain the result. Texas residents may contact the Texas Attorney General if an appeal is denied.</p>
-            <p>You can withdraw optional feature permissions through Apple device settings, disconnect an enabled email provider, revoke a dependent device, sign out, or request deletion. Withdrawal does not affect processing that was lawful before the withdrawal or information we must retain for legal, security, or dispute-resolution purposes.</p>
+            <p>You can withdraw optional notification permission through Apple device settings, revoke a dependent device, sign out, or request deletion. Withdrawal does not affect processing that was lawful before the withdrawal or information we must retain for legal, security, or dispute-resolution purposes.</p>
           </section>
 
           <section id="security">

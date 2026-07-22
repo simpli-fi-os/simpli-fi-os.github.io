@@ -129,12 +129,30 @@ for (const forbidden of [
 const clearIndex = joinScript.indexOf('window.history.replaceState')
 const renderIndex = joinScript.indexOf("document.querySelector('#join-message')")
 if (clearIndex < 0 || renderIndex < clearIndex) {
-  findings.push('join script must clear the query before rendering invitation state')
+  findings.push('join script must clear the fragment before rendering invitation state')
+}
+if (!joinScript.includes('window.location.hash') || joinScript.includes('window.location.search')) {
+  findings.push('join script must read the invitation only from the URL fragment')
 }
 
 const privacy = await readFile('family/privacy/index.html', 'utf8').catch(() => '')
-for (const disclosure of ['Approximate location for weather', 'Adult-only finance and email summaries', 'age 13 or older']) {
+for (const disclosure of [
+  'An adult age 18 or older',
+  'age 13 or older',
+  'money reward is a private household allowance promise',
+  'minimal pseudonymous binding between the active account and its Sign in with Apple identity',
+  'we do not request or upload an ActivityKit push token',
+]) {
   if (!privacy.includes(disclosure)) findings.push(`privacy policy is missing disclosure: ${disclosure}`)
+}
+for (const deferred of [
+  'Approximate location for weather',
+  'Adult-only finance and email summaries',
+  'Apple Weather',
+  'connected-email summaries are enabled',
+  'Live Activity tokens',
+]) {
+  if (privacy.includes(deferred)) findings.push(`privacy policy still describes deferred Store feature: ${deferred}`)
 }
 if (!privacy.includes('Simpli-FI OS LLC, a Texas limited liability company')) {
   findings.push('privacy policy must identify the exact operating entity')
@@ -143,6 +161,9 @@ if (!privacy.includes('Simpli-FI OS LLC, a Texas limited liability company')) {
 const terms = await readFile('family/terms/index.html', 'utf8').catch(() => '')
 for (const disclosure of ['Simpli-FI OS LLC', 'Denton County, Texas', 'at least 13 years old', 'household records', 'Apple’s Standard Licensed Application End User License Agreement']) {
   if (!terms.includes(disclosure)) findings.push(`terms are missing required language: ${disclosure}`)
+}
+for (const deferred of ['finance summaries', 'connected email providers', 'EMAIL SUMMARY', 'WEATHER RESULT']) {
+  if (terms.includes(deferred)) findings.push(`terms still describe deferred Store feature: ${deferred}`)
 }
 
 const security = await readFile('family/security/index.html', 'utf8').catch(() => '')
@@ -156,15 +177,20 @@ for (const field of ['Contact:', 'Expires:', 'Canonical:', 'Policy:']) {
 }
 
 const support = await readFile('family/support/index.html', 'utf8').catch(() => '')
-if (!support.includes('<strong>Settings</strong>')) findings.push('support page must match the release Settings tab')
-if (support.includes('<strong>More</strong>')) findings.push('support page still names the retired More tab')
+if (!support.includes('<strong>More</strong>')) findings.push('support page must match the release More tab')
+if (support.includes('uses invitation-based access')) {
+  findings.push('support page still says public household creation is invitation-only')
+}
 
 const association = JSON.parse(await readFile('.well-known/apple-app-site-association.json', 'utf8'))
 const details = association.applinks?.details ?? []
 const hasProductionInvite = details.some((detail) =>
-  detail.appIDs?.includes('N8J5KA7B3N.com.simplifi.familyos')
+  detail.appIDs?.length === 1
+  && detail.appIDs[0] === 'N8J5KA7B3N.com.simplifi.familyos'
   && detail.components?.some((component) =>
-    component['/'] === '/family/join/' && component['?']?.token === '*'
+    component['/'] === '/family/join/'
+    && component['#'] === 'token=*'
+    && Object.keys(component).every(key => ['/', '#', 'comment'].includes(key))
   )
 )
 if (!hasProductionInvite) findings.push('AASA does not bind the production app to /family/join/')

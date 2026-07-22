@@ -62,17 +62,24 @@ Simpli-FI OS is the creation of **Benjamin "Hunter" Lott** — a Fire Captain wi
 
 ## Site
 
-This repo hosts the portfolio site at **[simpli-fi-os.github.io](https://simpli-fi-os.github.io)** via GitHub Pages.
+This repository is the source for **[simpli-fi-os.com](https://simpli-fi-os.com)**.
+Vercel is the sole intended production host because the Family release contract
+requires explicit security headers, cache controls, canonical redirects, and
+an extensionless Apple App Site Association response. The GitHub Actions
+workflow verifies source only; it does not deploy or claim the custom domain.
 
-The site is a single `index.html` file — no build step, no framework, no dependencies to install. Just Tailwind CSS (CDN), Lucide Icons, and clean markup.
+The portfolio root remains static HTML. The Family surface adds local CSS,
+JavaScript, legal/support routes, a dependency-free Node test suite, and a
+fail-closed production verifier.
 
 ### Run locally
 
 ```bash
-# Just open the file
-open index.html
+# Use Node 22.16.0, then run the exact local gates
+npm test
+npm run build
 
-# Or use any static server
+# Optional local static server
 npx serve .
 ```
 
@@ -83,10 +90,10 @@ The App Store support and universal-link surface lives at:
 - `/family/`
 - `/family/support/`
 - `/family/privacy/`
-- `/family/join/?token=<short-lived-invite>`
+- `/family/join/#token=<short-lived-invite>`
 - `/.well-known/apple-app-site-association`
 
-The invitation page removes the query from browser history before rendering state. Its client code never places the token in the DOM, browser storage, analytics, console output, or a link attribute. Invitations must remain short-lived and single-use because an uninstalled-app fallback still reaches the web host as an HTTPS request. The installed app performs the authoritative token validation and claim.
+The invitation page removes the fragment from browser history before rendering state. URL fragments are not included in HTTP requests, and the client code never places the token in the DOM, browser storage, analytics, console output, or a link attribute. Invitations remain short-lived and single-use, and the installed app performs the authoritative token validation and claim.
 
 Run the dependency-free local gates with:
 
@@ -101,9 +108,13 @@ After an approved deployment, verify the real origin with:
 npm run verify:family:production -- https://simpli-fi-os.com
 ```
 
-The trailing-slash HTML URLs above are canonical because each route is published from a directory `index.html`; each must return `200` directly. Slashless aliases may redirect only to their matching trailing-slash URL, preserving the query on the invitation route.
+The trailing-slash HTML URLs above are canonical because each route is published from a directory `index.html`; each must return `200` directly. Slashless aliases may redirect only to their matching trailing-slash URL. Generated invitation URLs use the canonical trailing-slash route and carry their capability only in the fragment.
 
-**Production associated-domains status: HOLD.** This static commit proves the route and AASA content contract only. GitHub Pages commonly serves the extensionless association file as `application/octet-stream`, which does not satisfy this release gate. A header-capable edge host or a verified proxy rule must serve the exact file directly as `application/json` before live approval. The production verifier intentionally fails on an AASA redirect or incorrect MIME type and reports missing edge-level `nosniff`, CSP, referrer, and private-cache headers. See [FAMILY-PUBLIC-RELEASE-GATE.md](FAMILY-PUBLIC-RELEASE-GATE.md).
+**Production associated-domains status: HOLD.** This local source proves the
+route and AASA content contract only. An approved Vercel deployment must serve
+the exact association file directly as `application/json` and pass every
+required header, redirect, and content check before live approval. See
+[FAMILY-PUBLIC-RELEASE-GATE.md](FAMILY-PUBLIC-RELEASE-GATE.md).
 
 ---
 
