@@ -36,7 +36,7 @@ test('accepts only one exact URL-safe invitation token', () => {
 
 test('AASA binds only the production app to the exact join path', async () => {
   const association = JSON.parse(
-    await readFile('.well-known/apple-app-site-association.json', 'utf8'),
+    await readFile('.well-known/apple-app-site-association', 'utf8'),
   )
   const details = association.applinks?.details
   assert.equal(Array.isArray(details), true)
@@ -163,10 +163,7 @@ test('synthetic browser clears the fragment and gives manual HTTPS-link guidance
 test('Vercel serves Family routes with canonical redirects and release security headers', async () => {
   const config = JSON.parse(await readFile('vercel.json', 'utf8'))
   assert.equal(config.trailingSlash, true)
-  assert.deepEqual(config.rewrites, [{
-    source: '/.well-known/apple-app-site-association',
-    destination: '/.well-known/apple-app-site-association.json',
-  }])
+  assert.equal(config.rewrites, undefined)
 
   const headersBySource = new Map(
     config.headers.map(rule => [

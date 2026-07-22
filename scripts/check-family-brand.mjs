@@ -182,7 +182,7 @@ if (support.includes('uses invitation-based access')) {
   findings.push('support page still says public household creation is invitation-only')
 }
 
-const association = JSON.parse(await readFile('.well-known/apple-app-site-association.json', 'utf8'))
+const association = JSON.parse(await readFile('.well-known/apple-app-site-association', 'utf8'))
 const details = association.applinks?.details ?? []
 const hasProductionInvite = details.some((detail) =>
   detail.appIDs?.length === 1
