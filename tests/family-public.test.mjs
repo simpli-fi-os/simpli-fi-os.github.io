@@ -163,7 +163,10 @@ test('synthetic browser clears the fragment and gives manual HTTPS-link guidance
 test('Vercel serves Family routes with canonical redirects and release security headers', async () => {
   const config = JSON.parse(await readFile('vercel.json', 'utf8'))
   assert.equal(config.trailingSlash, true)
-  assert.equal(config.rewrites, undefined)
+  assert.deepEqual(config.rewrites, [{
+    source: '/.well-known/apple-app-site-association',
+    destination: '/api/aasa',
+  }])
 
   const headersBySource = new Map(
     config.headers.map(rule => [

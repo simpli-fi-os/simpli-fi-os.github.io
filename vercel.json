@@ -1,6 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "trailingSlash": true,
+  "rewrites": [
+    {
+      "source": "/.well-known/apple-app-site-association",
+      "destination": "/api/aasa"
+    }
+  ],
   "headers": [
     {
       "source": "/.well-known/apple-app-site-association",

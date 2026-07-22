@@ -13,6 +13,8 @@ import {
   validateJoinScriptSource,
 } from '../scripts/family-production-security-contract.mjs'
 
+import aasa from '../api/aasa.mjs'
+
 function headers(values) {
   return new Headers(values)
 }
@@ -99,6 +101,32 @@ test('AASA validation requires the exact one-app and one-component contract', ()
     'x-content-type-options': 'nosniff',
     'cache-control': 'public, max-age=300',
   })), [])
+})
+
+test('AASA endpoint sets the exact public response contract', () => {
+  const responseHeaders = new Map()
+  let status
+  let body
+  const response = {
+    setHeader(name, value) {
+      responseHeaders.set(name.toLowerCase(), value)
+    },
+    status(value) {
+      status = value
+      return this
+    },
+    send(value) {
+      body = value
+    },
+  }
+
+  aasa({}, response)
+
+  assert.equal(status, 200)
+  assert.equal(responseHeaders.get('cache-control'), 'public, max-age=300, must-revalidate')
+  assert.equal(responseHeaders.get('content-type'), 'application/json; charset=utf-8')
+  assert.equal(responseHeaders.get('x-content-type-options'), 'nosniff')
+  assert.deepEqual(JSON.parse(body), expectedFamilyAASA)
 })
 
 test('join.js validation rejects bearer downgrade and disclosure sinks', () => {
