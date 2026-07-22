@@ -4,6 +4,8 @@ import { createHash } from 'node:crypto'
 import { access, readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
+import { expectedFamilyAASA } from './family-production-security-contract.mjs'
+
 const approvedIconHash = 'e0627f75cddffabad292df58b0e17c2008f43058e882282d98562daf6c38811d'
 const exactLime = '9edd36'
 const findings = []
@@ -182,7 +184,7 @@ if (support.includes('uses invitation-based access')) {
   findings.push('support page still says public household creation is invitation-only')
 }
 
-const association = JSON.parse(await readFile('.well-known/apple-app-site-association', 'utf8'))
+const association = expectedFamilyAASA
 const details = association.applinks?.details ?? []
 const hasProductionInvite = details.some((detail) =>
   detail.appIDs?.length === 1

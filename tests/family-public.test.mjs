@@ -5,6 +5,7 @@ import test from 'node:test'
 import {
   invitationTokenFromFragment,
 } from '../family/join/join.js'
+import { expectedFamilyAASA } from '../scripts/family-production-security-contract.mjs'
 
 const validToken = 'A'.repeat(43)
 
@@ -35,9 +36,7 @@ test('accepts only one exact URL-safe invitation token', () => {
 })
 
 test('AASA binds only the production app to the exact join path', async () => {
-  const association = JSON.parse(
-    await readFile('.well-known/apple-app-site-association', 'utf8'),
-  )
+  const association = expectedFamilyAASA
   const details = association.applinks?.details
   assert.equal(Array.isArray(details), true)
   assert.equal(details.length, 1)
