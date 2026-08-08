@@ -5,6 +5,7 @@ import { access, readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
 import { expectedFamilyAASA } from './family-production-security-contract.mjs'
+import { familySecurityTxt } from './family-security-txt.mjs'
 
 const approvedIconHash = 'e0627f75cddffabad292df58b0e17c2008f43058e882282d98562daf6c38811d'
 const exactLime = '9edd36'
@@ -200,7 +201,9 @@ for (const disclosure of ['does not claim that household content is end-to-end e
   if (!security.includes(disclosure)) findings.push(`security page is missing required language: ${disclosure}`)
 }
 
-const securityTxt = await readFile('.well-known/security.txt', 'utf8').catch(() => '')
+// Served by api/security-txt.mjs, not a static file: a static file under
+// /.well-known/ would shadow the rewrite and lose the response headers.
+const securityTxt = familySecurityTxt
 for (const field of ['Contact:', 'Expires:', 'Canonical:', 'Policy:']) {
   if (!securityTxt.includes(field)) findings.push(`security.txt is missing ${field}`)
 }

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { readFile } from 'node:fs/promises'
+import { familySecurityTxt } from './family-security-txt.mjs'
 import {
   validateAssociationResponseHeaders,
   validateExactFamilyAASA,
@@ -226,7 +227,17 @@ try {
   if (!contentType.toLowerCase().startsWith('text/plain')) {
     findings.push(`${url} returned ${contentType || 'no Content-Type'}, expected text/plain`)
   }
+  // The native release gate fails closed on this header. Asserting it here too
+  // means a shadowed rewrite is caught by our own verifier instead of by the
+  // submission gate: the live document was served without it for exactly as
+  // long as this check was missing.
+  if ((response.headers.get('x-content-type-options') ?? '').trim().toLowerCase() !== 'nosniff') {
+    findings.push(`${url}: X-Content-Type-Options is not exactly nosniff`)
+  }
   const body = await response.text()
+  if (body !== familySecurityTxt) {
+    findings.push(`${url} bytes do not exactly match the reviewed release source`)
+  }
   for (const field of ['Contact:', 'Expires:', 'Canonical:', 'Policy:']) {
     if (!body.includes(field)) findings.push(`${url} is missing ${field}`)
   }

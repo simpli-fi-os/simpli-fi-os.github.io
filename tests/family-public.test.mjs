@@ -81,12 +81,17 @@ test('AASA binds only the production app to the exact join and App Review paths'
   })
 })
 
-test('published security.txt matches the static fallback byte for byte', async () => {
-  const staticFile = await readFile('.well-known/security.txt', 'utf8')
-  assert.equal(staticFile, familySecurityTxt)
+test('security.txt is served only by the function, with no shadowing static file', async () => {
+  // Vercel resolves the filesystem before rewrites, so a static file here would
+  // win and the function's headers would never be applied. Commit 117aaa3
+  // removed the static AASA for the same reason.
+  await assert.rejects(readFile('.well-known/security.txt', 'utf8'))
   for (const field of ['Contact:', 'Expires:', 'Canonical:', 'Policy:']) {
     assert.ok(familySecurityTxt.includes(field), field)
   }
+  const handler = await readFile('api/security-txt.mjs', 'utf8')
+  assert.match(handler, /X-Content-Type-Options/)
+  assert.match(handler, /text\/plain/)
 })
 
 test('every static HTML route declares its direct trailing-slash production URL', async () => {
