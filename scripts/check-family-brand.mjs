@@ -16,6 +16,7 @@ const pages = [
   'family/security/index.html',
   'family/terms/index.html',
   'family/join/index.html',
+  'family/app-review/index.html',
 ]
 const canonicalRoutes = new Map([
   ['family/index.html', 'https://simpli-fi-os.com/family/'],
@@ -24,7 +25,24 @@ const canonicalRoutes = new Map([
   ['family/security/index.html', 'https://simpli-fi-os.com/family/security/'],
   ['family/terms/index.html', 'https://simpli-fi-os.com/family/terms/'],
   ['family/join/index.html', 'https://simpli-fi-os.com/family/join/'],
+  ['family/app-review/index.html', 'https://simpli-fi-os.com/family/app-review/'],
 ])
+// Both fragment-bearer pages carry a short-lived capability in the URL fragment
+// and are held to the same no-index, no-sink, clear-before-render contract.
+const bearerPages = [
+  {
+    label: 'join',
+    html: 'family/join/index.html',
+    script: 'family/join/join.js',
+    renderSelector: "document.querySelector('#join-message')",
+  },
+  {
+    label: 'app-review',
+    html: 'family/app-review/index.html',
+    script: 'family/app-review/app-review.js',
+    renderSelector: "document.querySelector('#review-message')",
+  },
+]
 
 const icon = await readFile('family/assets/app-icon.png').catch(() => null)
 if (!icon) {
@@ -106,35 +124,37 @@ for (const page of pages) {
   }
 }
 
-const joinHtml = await readFile('family/join/index.html', 'utf8').catch(() => '')
-if (!joinHtml.includes('name="robots" content="noindex, nofollow, noarchive"')) {
-  findings.push('join page must be excluded from indexing and archival snippets')
-}
-if (!joinHtml.includes('<button id="open-family-app"') || /id="open-family-app"[^>]+href=/i.test(joinHtml)) {
-  findings.push('join page must use a button without a token-bearing href')
-}
+for (const bearer of bearerPages) {
+  const html = await readFile(bearer.html, 'utf8').catch(() => '')
+  if (!html.includes('name="robots" content="noindex, nofollow, noarchive"')) {
+    findings.push(`${bearer.label} page must be excluded from indexing and archival snippets`)
+  }
+  if (!html.includes('<button id="open-family-app"') || /id="open-family-app"[^>]+href=/i.test(html)) {
+    findings.push(`${bearer.label} page must use a button without a token-bearing href`)
+  }
 
-const joinScript = await readFile('family/join/join.js', 'utf8').catch(() => '')
-for (const forbidden of [
-  /localStorage/,
-  /sessionStorage/,
-  /document\.cookie/,
-  /sendBeacon/,
-  /fetch\(/,
-  /XMLHttpRequest/,
-  /console\./,
-  /\.innerHTML/,
-  /\.outerHTML/,
-]) {
-  if (forbidden.test(joinScript)) findings.push(`join script contains forbidden token sink ${forbidden}`)
-}
-const clearIndex = joinScript.indexOf('window.history.replaceState')
-const renderIndex = joinScript.indexOf("document.querySelector('#join-message')")
-if (clearIndex < 0 || renderIndex < clearIndex) {
-  findings.push('join script must clear the fragment before rendering invitation state')
-}
-if (!joinScript.includes('window.location.hash') || joinScript.includes('window.location.search')) {
-  findings.push('join script must read the invitation only from the URL fragment')
+  const script = await readFile(bearer.script, 'utf8').catch(() => '')
+  for (const forbidden of [
+    /localStorage/,
+    /sessionStorage/,
+    /document\.cookie/,
+    /sendBeacon/,
+    /fetch\(/,
+    /XMLHttpRequest/,
+    /console\./,
+    /\.innerHTML/,
+    /\.outerHTML/,
+  ]) {
+    if (forbidden.test(script)) findings.push(`${bearer.label} script contains forbidden token sink ${forbidden}`)
+  }
+  const clearIndex = script.indexOf('window.history.replaceState')
+  const renderIndex = script.indexOf(bearer.renderSelector)
+  if (clearIndex < 0 || renderIndex < clearIndex) {
+    findings.push(`${bearer.label} script must clear the fragment before rendering bearer state`)
+  }
+  if (!script.includes('window.location.hash') || script.includes('window.location.search')) {
+    findings.push(`${bearer.label} script must read its capability only from the URL fragment`)
+  }
 }
 
 const privacy = await readFile('family/privacy/index.html', 'utf8').catch(() => '')
@@ -212,16 +232,29 @@ for (const controlFile of ['CLAUDE.md', 'PRODUCT.md']) {
 
 const association = expectedFamilyAASA
 const details = association.applinks?.details ?? []
-const hasProductionInvite = details.some((detail) =>
-  detail.appIDs?.length === 1
+const detail = details.length === 1 ? details[0] : null
+const bindsProductionApp = detail?.appIDs?.length === 1
   && detail.appIDs[0] === 'N8J5KA7B3N.com.simplifi.familyos'
-  && detail.components?.some((component) =>
-    component['/'] === '/family/join/'
-    && component['#'] === 'token=*'
-    && Object.keys(component).every(key => ['/', '#', 'comment'].includes(key))
-  )
-)
-if (!hasProductionInvite) findings.push('AASA does not bind the production app to /family/join/')
+if (!bindsProductionApp) {
+  findings.push('AASA must bind exactly one detail entry to the production app')
+}
+// The native release verifier deep-equality checks this same two-component
+// contract in path order, so both routes and their order are load-bearing.
+const expectedComponentPaths = ['/family/join/', '/family/app-review/']
+const components = detail?.components ?? []
+if (components.length !== expectedComponentPaths.length) {
+  findings.push(`AASA must declare exactly ${expectedComponentPaths.length} fragment components`)
+} else {
+  expectedComponentPaths.forEach((path, index) => {
+    const component = components[index]
+    const valid = component?.['/'] === path
+      && component['#'] === 'token=*'
+      && Object.keys(component).every(key => ['/', '#', 'comment'].includes(key))
+      && typeof component.comment === 'string'
+      && component.comment.length > 0
+    if (!valid) findings.push(`AASA component ${index + 1} does not bind ${path} to the exact token fragment`)
+  })
+}
 
 if (findings.length > 0) {
   console.error('Family public brand and link contract failed:')

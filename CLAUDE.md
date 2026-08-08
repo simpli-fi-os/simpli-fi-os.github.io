@@ -12,9 +12,18 @@ deploy GitHub Pages or claim the custom domain.
   `https://simpli-fi-os.com/family/join/#token=<short-lived-token>`. The bearer
   token must never enter an HTTP query, the DOM, browser storage, logs,
   analytics, or a link attribute.
-- The AASA document must bind only
-  `N8J5KA7B3N.com.simplifi.familyos` to `/family/join/` with the exact
-  `token=*` fragment component.
+- The AASA document must bind only `N8J5KA7B3N.com.simplifi.familyos`, and only
+  to `/family/join/` and `/family/app-review/`, each with the exact `token=*`
+  fragment component and in that order. `expectedFamilyAASA` here and
+  `EXPECTED_FAMILY_AASA` in the native release verifier are both deep-equality
+  checked against the live document, so the two must change together.
+- `/family/app-review/` serves purpose-bound, expiring App Review access to a
+  synthetic household. It is `noindex` and follows the same fragment-bearer
+  contract as `/family/join/`.
+- Static files under `/.well-known/` do not receive `vercel.json` header rules.
+  The AASA and `security.txt` documents are therefore served from serverless
+  functions that set their own headers; the static files are fallbacks only and
+  are asserted byte-identical by tests.
 - Version 1.0 is adults only: one primary adult and at most one second adult,
   both age 18 or older and authenticated with distinct Sign in with Apple
   identities. The link can start a request but never grants membership.

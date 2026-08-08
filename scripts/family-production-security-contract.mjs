@@ -9,6 +9,9 @@ export const familyJoinCSP =
 export const familyPermissionsPolicy =
   'browsing-topics=(), camera=(), geolocation=(), microphone=(), payment=(), usb=()'
 
+// This object is byte-compatible with EXPECTED_FAMILY_AASA in the native release
+// verifier (scripts/familyos-release-readiness.mjs). Both are deep-equality
+// checked against the live document, so the two must change together.
 export const expectedFamilyAASA = Object.freeze({
   applinks: {
     details: [
@@ -19,7 +22,13 @@ export const expectedFamilyAASA = Object.freeze({
             '/': '/family/join/',
             '#': 'token=*',
             comment:
-              'Opens a short-lived Simpli-FI Family second-adult household invitation. The app validates the token before use.',
+              'Opens a short-lived Simpli-FI Family adult-household invitation. The app validates the token before use.',
+          },
+          {
+            '/': '/family/app-review/',
+            '#': 'token=*',
+            comment:
+              'Opens purpose-bound, expiring synthetic App Review access. The fragment token is never sent to the web origin.',
           },
         ],
       },

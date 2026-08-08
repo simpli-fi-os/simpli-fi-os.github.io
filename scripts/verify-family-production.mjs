@@ -10,10 +10,16 @@ import {
 
 const baseURL = new URL(process.argv[2] ?? 'https://simpli-fi-os.com')
 const findings = []
-const expectedJoinScript = await readFile(
-  new URL('../family/join/join.js', import.meta.url),
-  'utf8',
-)
+
+// Fragment-bearer pages: tighter CSP, no-store caching, and byte-exact scripts.
+const bearerScripts = [
+  { path: '/family/join/join.js', source: '../family/join/join.js' },
+  { path: '/family/app-review/app-review.js', source: '../family/app-review/app-review.js' },
+]
+for (const bearer of bearerScripts) {
+  bearer.expected = await readFile(new URL(bearer.source, import.meta.url), 'utf8')
+}
+const bearerRoutes = new Set(['/family/join/', '/family/app-review/'])
 
 if (baseURL.protocol !== 'https:') {
   findings.push('production verification requires an HTTPS origin')
@@ -35,6 +41,7 @@ const routes = [
   { canonical: '/family/security/', alias: '/family/security' },
   { canonical: '/family/terms/', alias: '/family/terms' },
   { canonical: '/family/join/', alias: '/family/join' },
+  { canonical: '/family/app-review/', alias: '/family/app-review' },
 ]
 
 const pageContracts = new Map([
@@ -145,7 +152,7 @@ for (const { canonical } of routes) {
       findings.push(`${url} does not declare the direct trailing-slash canonical URL`)
     }
     for (const finding of validateFamilyResponseHeaders(response.headers, {
-      join: canonicalPath === '/family/join/',
+      join: bearerRoutes.has(canonicalPath),
     })) {
       findings.push(`${url}: ${finding}`)
     }
@@ -190,24 +197,26 @@ try {
   findings.push(`production AASA could not be verified: ${error instanceof Error ? error.message : 'unknown error'}`)
 }
 
-try {
-  const { response, url } = await directFetch('/family/join/join.js')
-  if (response.status !== 200) findings.push(`${url} returned ${response.status}, expected 200`)
-  for (const finding of validateFamilyResponseHeaders(response.headers, {
-    join: true,
-    script: true,
-  })) {
-    findings.push(`${url}: ${finding}`)
+for (const bearer of bearerScripts) {
+  try {
+    const { response, url } = await directFetch(bearer.path)
+    if (response.status !== 200) findings.push(`${url} returned ${response.status}, expected 200`)
+    for (const finding of validateFamilyResponseHeaders(response.headers, {
+      join: true,
+      script: true,
+    })) {
+      findings.push(`${url}: ${finding}`)
+    }
+    const source = await response.text()
+    if (source !== bearer.expected) {
+      findings.push(`${url} bytes do not exactly match the reviewed release source`)
+    }
+    for (const finding of validateJoinScriptSource(source)) {
+      findings.push(`${url}: ${finding}`)
+    }
+  } catch (error) {
+    findings.push(`production ${bearer.path} could not be verified: ${error instanceof Error ? error.message : 'unknown error'}`)
   }
-  const source = await response.text()
-  if (source !== expectedJoinScript) {
-    findings.push(`${url} bytes do not exactly match the reviewed release source`)
-  }
-  for (const finding of validateJoinScriptSource(source)) {
-    findings.push(`${url}: ${finding}`)
-  }
-} catch (error) {
-  findings.push(`production join.js could not be verified: ${error instanceof Error ? error.message : 'unknown error'}`)
 }
 
 try {
