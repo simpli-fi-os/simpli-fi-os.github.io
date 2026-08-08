@@ -45,7 +45,7 @@ test('AASA binds only the production app to the exact join path', async () => {
   assert.deepEqual(details[0].components[0], {
     '/': '/family/join/',
     '#': 'token=*',
-    comment: 'Opens a short-lived Simpli-FI Family dependent-device invitation. The app validates the token before use.',
+    comment: 'Opens a short-lived Simpli-FI Family second-adult household invitation. The app validates the token before use.',
   })
 })
 
@@ -63,6 +63,33 @@ test('every static HTML route declares its direct trailing-slash production URL'
     const html = await readFile(file, 'utf8')
     assert.match(html, new RegExp(`<link rel="canonical" href="${canonicalURL.replaceAll('.', '\\.')}">`))
   }
+})
+
+test('public navigation keeps the reviewed cache and touch-target contract', async () => {
+  const files = [
+    'family/index.html',
+    'family/support/index.html',
+    'family/privacy/index.html',
+    'family/security/index.html',
+    'family/terms/index.html',
+    'family/join/index.html',
+  ]
+  const stylesheet = await readFile('family/assets/family.css', 'utf8')
+
+  for (const file of files) {
+    const html = await readFile(file, 'utf8')
+    assert.match(
+      html,
+      /<link rel="stylesheet" href="\/family\/assets\/family\.css\?v=20260726b">/,
+      file,
+    )
+  }
+
+  assert.match(stylesheet, /\.brand\s*\{[^}]*min-height:\s*44px;/s)
+  assert.match(stylesheet, /\.site-nav a\s*\{[^}]*min-width:\s*44px;[^}]*min-height:\s*44px;/s)
+  assert.match(stylesheet, /\.side-nav a\s*\{[^}]*min-height:\s*44px;/s)
+  assert.match(stylesheet, /\.text-link\s*\{[^}]*min-height:\s*44px;/s)
+  assert.match(stylesheet, /\.footer-links a\s*\{[^}]*min-width:\s*44px;[^}]*min-height:\s*44px;/s)
 })
 
 test('join page clears the URL before rendering invitation state and never stores the token', async () => {
@@ -228,9 +255,26 @@ test('legal surfaces name the exact operator and expose complete user controls',
 
   assert.match(privacy, /Simpli-FI OS LLC, a Texas limited liability company/)
   assert.match(privacy, /Your choices, rights, and appeals/)
+  assert.match(privacy, /Version 1\.0 does not offer accounts, profiles, or invitations for anyone under 18/)
   assert.match(terms, /Denton County, Texas/)
-  assert.match(terms, /at least 13 years old/)
+  assert.match(terms, /at least 18 years old/)
+  assert.match(terms, /only one active Simpli-FI Family household membership/)
+  assert.match(terms, /Possessing or opening an invitation does not grant membership/)
   assert.match(terms, /Apple’s Standard Licensed Application End User License Agreement/)
+  assert.doesNotMatch(privacy, /\bdependents?\b|\bteen\b|age 13/i)
+  assert.doesNotMatch(terms, /\bdependents?\b|\bteen\b|age 13|under 13/i)
   assert.match(security, /does not claim that household content is end-to-end encrypted/)
   assert.match(security, /Report a suspected vulnerability/)
+})
+
+test('repository control docs lock the public release to adults only', async () => {
+  for (const file of ['CLAUDE.md', 'PRODUCT.md']) {
+    const source = await readFile(file, 'utf8')
+    assert.match(source, /adults.only/i, file)
+    assert.doesNotMatch(
+      source,
+      /\bdependents?\b|\bteenagers?\b|age 13/i,
+      file,
+    )
+  }
 })

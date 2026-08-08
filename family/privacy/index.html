@@ -10,7 +10,7 @@
   <link rel="canonical" href="https://simpli-fi-os.com/family/privacy/">
   <link rel="icon" href="/family/assets/app-icon.png" type="image/png">
   <link rel="apple-touch-icon" href="/family/assets/app-icon.png">
-  <link rel="stylesheet" href="/family/assets/family.css">
+  <link rel="stylesheet" href="/family/assets/family.css?v=20260726b">
   <title>Privacy — Simpli-FI Family</title>
 </head>
 <body>
@@ -38,10 +38,10 @@
         <div>
           <p class="eyebrow">Privacy policy</p>
           <h1>Family data should stay family data.</h1>
-          <p class="legal-meta">Effective July 18, 2026</p>
+          <p class="legal-meta">Effective July 26, 2026</p>
         </div>
         <div class="page-intro-copy">
-          <p>This policy explains what Simpli-FI Family collects, why it is needed, and the controls available to adults and household members.</p>
+          <p>This policy explains what Simpli-FI Family collects, why it is needed, and the controls available to the one or two adults in a version 1.0 household.</p>
         </div>
       </div>
     </header>
@@ -55,7 +55,7 @@
           <a href="#use">How information is used</a>
           <a href="#share">Service providers and sharing</a>
           <a href="#visibility">Household visibility</a>
-          <a href="#dependents">Dependents</a>
+          <a href="#eligibility">Adult eligibility</a>
           <a href="#retention">Retention and deletion</a>
           <a href="#choices">Your choices</a>
           <a href="#security">Security</a>
@@ -66,16 +66,17 @@
           <section id="scope">
             <h2>Scope</h2>
             <p>This Privacy Policy applies to the Simpli-FI Family application and its related support pages. Simpli-FI Family is operated by Simpli-FI OS LLC, a Texas limited liability company based in Denton County, Texas, United States. In this policy, “Simpli-FI,” “we,” “us,” and “our” refer to Simpli-FI OS LLC.</p>
-            <p>Simpli-FI Family is a private, adult-led family productivity service for task agreements, time budgeting, timers, household rewards, and personal history.</p>
-            <p>The first public release is intended only for users in the United States. An adult age 18 or older creates the household. Dependents age 13 or older join through adult-managed access; there is no public dependent self-signup.</p>
+            <p>Simpli-FI Family is a private, adults-only family productivity service for task agreements, time budgeting, timers, household rewards, and personal history.</p>
+            <p>The first public release is intended only for adults in the United States. An adult age 18 or older creates one household and may add exactly one second adult age 18 or older through a mutual-confirmation invitation flow. Version 1.0 does not offer accounts, profiles, or invitations for anyone under 18.</p>
             <p>The app is not a public social network, banking service, money-transfer service, or advertising platform.</p>
           </section>
 
           <section id="collect">
             <h2>Information we collect</h2>
             <h3>Account and household information</h3>
-            <p>When an adult signs in with Apple, we receive an Apple authentication credential and may receive a name and email address or Apple private-relay address. We create service identifiers needed to authenticate the account, authorize household access, and link dependents. For a household creator, we store a coarse 18-or-older eligibility band. For a linked dependent, we store a coarse 13-or-older eligibility band and the adult’s attestation metadata. We do not collect a birth date.</p>
-            <p>Depending on the person’s device, Apple Account, and region, Apple may make age-assurance features available or require the Service to request a coarse age category. Apple may indicate that the category was self-declared, guardian-declared, or confirmed using a supported method. We use only the returned category and declaration or confirmation method to enforce eligibility. We do not store an exact age or birth date. If a required category is unavailable, declined, invalid, or indicates that the person is under 13, we do not create or link the account.</p>
+            <p>When an adult signs in with Apple, we receive an Apple authentication credential and may receive a name and email address or Apple private-relay address. We create service identifiers needed to authenticate the account and authorize household access. Each household uses one primary-adult role and, if invited, one second-adult role. Both adults must use distinct Sign in with Apple identities. We store a coarse 18-or-older eligibility band and related attestation metadata, but we do not collect a birth date.</p>
+            <p>Depending on the person’s device, Apple Account, and region, Apple may make age-assurance features available or require the Service to request a coarse age category. Apple may indicate how that category was declared or confirmed. We use only the returned category and declaration or confirmation method to enforce eligibility. If required adult eligibility is unavailable, declined, invalid, or indicates that the person is under 18, we do not create or link the account.</p>
+            <p>Adding the second adult uses a short-lived invitation and pending approval record. Possessing or opening a link does not grant household membership. After the invited adult authenticates and requests to join, both adults see the same short comparison code. The primary adult must approve that exact pending request before membership becomes active. We store the invitation and request state, pseudonymous claimant bindings, display name, comparison-code integrity data, and trusted timestamps needed to secure and complete this flow. We do not request contacts or an address book.</p>
             <p>To confirm current App Store consent status, we verify a signed App Store transaction without retaining the signed payload or raw transaction identifier. We retain pseudonymous one-way transaction and account bindings, the App Store environment, consent status, and verification timestamps. Apple may send signed server notifications about that consent. If Apple reports that consent was rescinded, we revoke active service sessions and keep access blocked. A later signed transaction by itself does not restore access; restoration would require a separate platform signal and verification path that the Service supports.</p>
             <h3>Content you choose to create</h3>
             <p>We store information needed for the features you use, including display names; task titles and categories; goal-linked tasks; time budgets; due times; private notes; assignment responses; structured change requests; timer sessions; completion status; quest points; custom reward labels; and optional household money-reward amounts and currency codes.</p>
@@ -85,7 +86,7 @@
             <h3>Reliability and diagnostic information</h3>
             <p>Bundled Firebase and Google components may process limited, pseudonymous or non-linked installation, messaging, transport, and diagnostic information for app functionality, reliability, and operational diagnostics. We do not use this information to profile household content, advertise to family members, or track people across other companies’ apps or websites.</p>
             <h3>Support communications</h3>
-            <p>If you contact us, we receive the information you include in the message. Please do not send passwords, access codes, private task notes, or unnecessary information about a child.</p>
+            <p>If you contact us, we receive the information you include in the message. Please do not send passwords, access codes, invitation links, private task notes, or another person’s unnecessary information.</p>
             <p>Simpli-FI Family 1.0 does not request location, contacts, photos, retained microphone recordings, HealthKit or fitness data, clinical records, diagnoses, biometrics, medical measurements, connected-email content, net-worth or banking data, bank credentials, account numbers, or payment-card details. Dictation, keyboard, and Scribble input are provided through Apple’s system interfaces and are subject to your device and Apple settings.</p>
           </section>
 
@@ -119,22 +120,21 @@
 
           <section id="visibility">
             <h2>Household visibility</h2>
-            <p>Household content is not public. Household adults can view household membership and household task, timer, completion-review, and reward records. Assigners and assignees can view their shared agreement, event history, and structured change requests. Dependents can view their own timer and reward records according to their role.</p>
+            <p>Household content is not public. Before approval, an invited adult receives no household member list, task, reward, note, or history. After approval, both household adults can view membership and household task, timer, completion-review, and reward records. Assigners and assignees can view their shared agreement, event history, and structured change requests.</p>
             <p>The service uses authenticated, role-based access controls. It does not claim that household content is end-to-end encrypted.</p>
           </section>
 
-          <section id="dependents">
-            <h2>Dependents and children</h2>
-            <p>Simpli-FI Family is not offered for public child self-signup. In the first release, dependent-device linking is limited to family members age 13 or older. Do not create or link an account for a child under 13.</p>
-            <p>We limit dependent access according to household role. Dependents do not receive public profiles, public discovery, unrestricted messaging, advertising, or banking features.</p>
-            <p>If we learn that we collected personal information online from a child under 13 without legally sufficient authorization, we will suspend the relevant access, investigate, and delete the information as required. A household adult should contact us immediately if a child under 13 was linked or if a dependent was linked without appropriate adult authorization.</p>
+          <section id="eligibility">
+            <h2>Adult eligibility</h2>
+            <p>Simpli-FI Family version 1.0 is for adults age 18 or older. Do not create, invite, or link an account or profile for anyone under 18. A parent, guardian, or other adult cannot waive this requirement.</p>
+            <p>If we learn that information was submitted for, or an account was used by, someone under 18, we will suspend the relevant access, investigate, and delete the information as required. Contact us immediately if you believe an under-18 person received access.</p>
           </section>
 
           <section id="retention">
             <h2>Retention and deletion</h2>
             <p>We retain account and household information while the account is active and as needed to provide the service, secure it, meet legal obligations, and resolve disputes. Adults can start account or household deletion from the app.</p>
-            <p>A successful primary-owner deletion revokes household access and removes the active household tree, managed-dependent accounts, and owner account as part of the server request. A non-owner adult deletion removes that person’s account and membership without deleting records the household must retain as its shared task history. A dependent self-deletion removes the linked login, household membership records, and dependent account; an adult may create a new managed profile later if appropriate.</p>
-            <p>A minimal pseudonymous binding between the active account and its Sign in with Apple identity is retained while the account remains active and until deletion converges. It is used to prevent identity replay or accidental recreation and does not contain household task text. A pseudonymous deletion receipt, keyed by a one-way user hash and containing the deletion mode, relevant household identifiers, and request state, may be retained for up to 30 days to make interrupted requests safe to retry. Versioned legal-acknowledgement receipts contain the account identifier, policy versions, acceptance flow, app version/build, server acceptance time, and—when applicable—the managed profile and authorizing adult identifiers. Those receipts may be retained for up to four years to establish consent and enforce the agreement.</p>
+            <p>A successful primary-owner deletion revokes household access and removes the active household tree and owner account as part of the server request. A second-adult deletion removes that person’s account and membership. While the household remains active, shared task history may remain for the primary adult with the deleted adult’s account identifiers removed or replaced by a deletion pseudonym. The active household tree is removed if the primary adult later deletes the household.</p>
+            <p>A minimal pseudonymous binding between the active account and its Sign in with Apple identity is retained while the account remains active and until deletion converges. It is used to prevent identity replay or accidental recreation and does not contain household task text. A pseudonymous deletion receipt, keyed by a one-way user hash and containing the deletion mode, relevant household identifiers, and request state, may be retained for up to 30 days to make interrupted requests safe to retry. Versioned legal-acknowledgement receipts contain the account identifier, policy versions, acceptance flow, app version/build, and server acceptance time. Those receipts may be retained for up to four years to establish consent and enforce the agreement.</p>
             <p>Account-linked App Store transaction bindings and consent-revocation records are removed when account deletion converges. Pseudonymous consent-state and notification receipts may be retained only as reasonably needed to prevent replay, document consent changes, meet legal obligations, and resolve disputes. Those receipts do not contain the account identifier, signed transaction or notification payload, or raw transaction or notification identifiers.</p>
             <p>Privacy-minimized security, authorization, command, notification, and reliability records are retained only for the period reasonably needed for those purposes, legal compliance, or dispute resolution. Residual copies may remain temporarily in protected provider backups until those backups rotate under the provider’s standard schedule.</p>
           </section>
@@ -144,14 +144,14 @@
             <ul>
               <li><strong>Notifications:</strong> choose whether to allow notifications in Apple device settings.</li>
               <li><strong>Household content:</strong> create, respond to, complete, and review tasks according to your household role.</li>
-              <li><strong>Device access:</strong> household adults can revoke linked dependent-device access.</li>
+              <li><strong>Household membership:</strong> the primary adult can remove the second adult, and the second adult can leave the household.</li>
               <li><strong>Sign out:</strong> remove the active session from a device in the app.</li>
               <li><strong>Deletion:</strong> start account or household deletion in the app or contact us for help.</li>
             </ul>
             <p>Depending on where you live, you may have the right to confirm whether we process your personal information; access, correct, delete, or obtain a portable copy of it; and opt out of a sale, targeted advertising, or profiling that produces legal or similarly significant effects. We do not sell personal information or use it for targeted advertising or this kind of profiling. We will not discriminate against you for exercising a privacy right.</p>
-            <p>To exercise a right, email <a href="mailto:ready@simpli-fi-os.com?subject=Simpli-FI%20Family%20privacy%20request">ready@simpli-fi-os.com</a> and identify the request as relating to Simpli-FI Family. We will acknowledge and respond within the period required by applicable law. We may need to verify the requester and the requester’s authority over the household before acting. A teen may submit a request about the teen’s own account. A household adult or another authorized agent may submit a request when applicable law and the person’s authority permit, but we may ask for proof of authority and direct identity confirmation.</p>
+            <p>To exercise a right, email <a href="mailto:ready@simpli-fi-os.com?subject=Simpli-FI%20Family%20privacy%20request">ready@simpli-fi-os.com</a> and identify the request as relating to Simpli-FI Family. We will acknowledge and respond within the period required by applicable law. We may need to verify the requester and the requester’s authority over the household before acting. An authorized agent may submit a request when applicable law and the person’s authority permit, but we may ask for proof of authority and direct identity confirmation.</p>
             <p>If we deny a privacy request, reply to our decision within 30 days with the word “Appeal” in the subject line and explain why you believe the decision should be reconsidered. We will review the appeal and explain the result. Texas residents may contact the Texas Attorney General if an appeal is denied.</p>
-            <p>You can withdraw optional notification permission through Apple device settings, revoke a dependent device, sign out, or request deletion. Withdrawal does not affect processing that was lawful before the withdrawal or information we must retain for legal, security, or dispute-resolution purposes.</p>
+            <p>You can withdraw optional notification permission through Apple device settings, leave or remove the second-adult membership, sign out, or request deletion. Withdrawal does not affect processing that was lawful before the withdrawal or information we must retain for legal, security, or dispute-resolution purposes.</p>
           </section>
 
           <section id="security">
@@ -168,7 +168,7 @@
 
           <section id="contact">
             <h2>Contact us</h2>
-            <p>For privacy questions, dependent-access concerns, or deletion support, email <a href="mailto:ready@simpli-fi-os.com?subject=Simpli-FI%20Family%20privacy">ready@simpli-fi-os.com</a>.</p>
+            <p>For privacy questions, household-access concerns, or deletion support, email <a href="mailto:ready@simpli-fi-os.com?subject=Simpli-FI%20Family%20privacy">ready@simpli-fi-os.com</a>.</p>
             <p>Simpli-FI OS LLC<br>Denton County, Texas, United States</p>
             <p>Please identify the request as relating to Simpli-FI Family. Do not include passwords, access codes, or private household content in the first message.</p>
           </section>

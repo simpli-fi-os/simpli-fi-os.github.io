@@ -19,7 +19,7 @@ export const expectedFamilyAASA = Object.freeze({
             '/': '/family/join/',
             '#': 'token=*',
             comment:
-              'Opens a short-lived Simpli-FI Family dependent-device invitation. The app validates the token before use.',
+              'Opens a short-lived Simpli-FI Family second-adult household invitation. The app validates the token before use.',
           },
         ],
       },

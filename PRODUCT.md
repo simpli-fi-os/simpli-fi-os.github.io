@@ -6,7 +6,7 @@ brand
 
 ## Users
 
-The public Simpli-FI OS site serves people evaluating the studio and its products. The Family routes specifically serve invited household adults, family members age 13 or older, App Review, and people arriving from an invitation or support link. They need to understand the product quickly, verify its privacy posture, find practical help, or move a private invitation into the installed app without exposing it.
+The public Simpli-FI OS site serves people evaluating the studio and its products. The Family routes specifically serve adults age 18 or older, synthetic App Review accounts, and adults arriving from a second-adult invitation or support link. Version 1.0 supports one primary adult and at most one second adult; it does not offer accounts, profiles, or invitations for anyone under 18. Visitors need to understand the product quickly, verify its privacy posture, find practical help, or move a private invitation into the installed app without exposing it.
 
 ## Product Purpose
 
@@ -28,10 +28,10 @@ Calm, capable, and protective. The voice is warm without becoming childish, dire
 
 1. **Make the agreement visible.** Explain who owns the work, the time budget, the response, and the shared record in plain language.
 2. **One meaningful action at a time.** Lime is reserved for the next safe action; structure and typography carry everything else.
-3. **Privacy is part of the experience.** Adult-led access, household boundaries, and safe support behavior should be understandable without reading legal prose.
+3. **Privacy is part of the experience.** Adults-only access, mutual second-adult approval, household boundaries, and safe support behavior should be understandable without reading legal prose.
 4. **Show only what is true.** Use the approved identity and release-backed capabilities; label illustrative content and avoid simulated feature proof.
 5. **Feel fast by staying simple.** Static, dependency-light pages should render immediately, work without analytics, and remain useful with motion disabled.
 
 ## Accessibility & Inclusion
 
-Target WCAG 2.2 AA. Every route must work at 320 CSS pixels and 200% zoom, preserve logical heading and landmark order, expose visible keyboard focus, meet text and control contrast, support reduced motion, avoid color-only meaning, and use plain language suitable for both adults and teenagers. The invitation route must announce its result and remain useful without JavaScript by providing a safe help path.
+Target WCAG 2.2 AA. Every route must work at 320 CSS pixels and 200% zoom, preserve logical heading and landmark order, expose visible keyboard focus, meet text and control contrast, support reduced motion, avoid color-only meaning, and use plain language for adults. The invitation route must announce its result and remain useful without JavaScript by providing a safe help path.

@@ -8,14 +8,17 @@ deploy GitHub Pages or claim the custom domain.
 
 - Preserve the approved Simpli-FI Family icon and the black, white, and
   `#9EDD36` visual system.
-- Public dependent invitations use
+- Public second-adult household invitations use
   `https://simpli-fi-os.com/family/join/#token=<short-lived-token>`. The bearer
   token must never enter an HTTP query, the DOM, browser storage, logs,
   analytics, or a link attribute.
 - The AASA document must bind only
   `N8J5KA7B3N.com.simplifi.familyos` to `/family/join/` with the exact
   `token=*` fragment component.
-- Treat legal copy, minors disclosures, operator identity, support contacts,
+- Version 1.0 is adults only: one primary adult and at most one second adult,
+  both age 18 or older and authenticated with distinct Sign in with Apple
+  identities. The link can start a request but never grants membership.
+- Treat legal copy, adult-eligibility disclosures, operator identity, support contacts,
   and deletion language as release-controlled content.
 - Never use a real household, identity, or invitation token in source, tests,
   screenshots, or verification.

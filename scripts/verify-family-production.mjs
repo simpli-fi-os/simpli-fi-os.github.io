@@ -40,8 +40,8 @@ const routes = [
 const pageContracts = new Map([
   ['/family/', {
     required: [
-      'Built for private, adult-led households',
-      'Adults age 18 or older create households.',
+      'Built for private, adults-only households',
+      'An adult age 18 or older creates the household and may add exactly one second adult through mutual confirmation.',
       'The first public release is coming to the U.S. App Store.',
     ],
     forbidden: [
@@ -51,9 +51,9 @@ const pageContracts = new Map([
   }],
   ['/family/privacy/', {
     required: [
-      'Effective July 18, 2026',
-      'The first public release is intended only for users in the United States.',
-      'An adult age 18 or older creates the household.',
+      'Effective July 26, 2026',
+      'The first public release is intended only for adults in the United States.',
+      'Possessing or opening a link does not grant household membership.',
       'Simpli-FI Family 1.0 does not request location',
       'Simpli-FI Family does not move funds',
     ],
@@ -62,13 +62,17 @@ const pageContracts = new Map([
       'Adult-only finance and email summaries',
       'Approximate location for weather',
       'Connected email providers',
+      'Dependents age 13',
+      'dependent-device',
     ],
   }],
   ['/family/terms/', {
     required: [
-      'Effective July 18, 2026',
-      'The first public release is available only in the United States.',
-      'A household creator must be at least 18 years old.',
+      'Effective July 26, 2026',
+      'The first public release is available only to adults in the United States.',
+      'You must be at least 18 years old',
+      'Each adult may hold only one active Simpli-FI Family household membership at a time.',
+      'Possessing or opening an invitation does not grant membership.',
       'Quest points, custom rewards, and money amounts are private household records.',
     ],
     forbidden: [
@@ -77,30 +81,39 @@ const pageContracts = new Map([
       'finance summaries',
       'connected email providers',
       'weather result',
+      'at least 13 years old',
+      'child under 13',
     ],
   }],
   ['/family/security/', {
     required: [
-      'Last reviewed July 18, 2026',
-      'private, adult-led households',
+      'Last reviewed July 26, 2026',
+      'private, adults-only households',
       'Public household creation requires an adult Sign in with Apple session',
+      'Possessing a link never grants membership.',
       'The first release does not request location',
     ],
     forbidden: [
       'private, invitation-based households',
       'connected-email dashboard',
       'Weather requests reduce location precision',
+      'Dependents are linked',
     ],
   }],
   ['/family/support/', {
     required: [
       'In the public release, an adult age 18 or older signs in with Apple',
-      'The first release does not permit linking a child under 13.',
+      'How does a second adult join?',
+      'both adults compare the same six-character code',
+      'Opening a link does not grant membership.',
+      'account identifiers removed or replaced by a deletion pseudonym',
       'Money rewards are private household ledger promises only.',
     ],
     forbidden: [
       'Access is limited to invited households.',
       'Ask support to invite your household',
+      'How does a dependent join?',
+      'child under 13',
     ],
   }],
 ])
@@ -122,7 +135,7 @@ for (const { canonical } of routes) {
     const pageContract = pageContracts.get(canonicalPath)
     if (pageContract) {
       for (const text of pageContract.required) {
-        if (!body.includes(text)) findings.push(`${url} is missing the Build 5 disclosure: ${text}`)
+        if (!body.includes(text)) findings.push(`${url} is missing the adults-only release disclosure: ${text}`)
       }
       for (const text of pageContract.forbidden) {
         if (body.includes(text)) findings.push(`${url} still contains superseded disclosure: ${text}`)

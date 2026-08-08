@@ -10,7 +10,7 @@
   <link rel="canonical" href="https://simpli-fi-os.com/family/security/">
   <link rel="icon" href="/family/assets/app-icon.png" type="image/png">
   <link rel="apple-touch-icon" href="/family/assets/app-icon.png">
-  <link rel="stylesheet" href="/family/assets/family.css">
+  <link rel="stylesheet" href="/family/assets/family.css?v=20260726b">
   <title>Security &amp; Data Practices — Simpli-FI Family</title>
 </head>
 <body>
@@ -37,7 +37,7 @@
         <div>
           <p class="eyebrow">Security &amp; Data Practices</p>
           <h1>Private by structure, not by slogan.</h1>
-          <p class="legal-meta">Last reviewed July 18, 2026</p>
+          <p class="legal-meta">Last reviewed July 26, 2026</p>
         </div>
         <div class="page-intro-copy">
           <p>A plain-language overview of how Simpli-FI Family limits access, protects household commands, and responds to security reports.</p>
@@ -63,17 +63,19 @@
         <article class="legal-copy">
           <section id="model">
             <h2>Our security model</h2>
-            <p>Simpli-FI Family is operated by Simpli-FI OS LLC. The Service is designed for private, adult-led households, not public profiles or open discovery. We treat household identity, task, timer, and reward information as confidential.</p>
+            <p>Simpli-FI Family is operated by Simpli-FI OS LLC. Version 1.0 is designed for private, adults-only households, not public profiles or open discovery. We treat household identity, task, timer, and reward information as confidential.</p>
             <p>Security is a continuing process, not a guarantee. No method of storage or transmission is completely secure. This page describes safeguards the Service is designed to use; it does not promise immunity from every failure or attack and does not claim that household content is end-to-end encrypted.</p>
           </section>
 
           <section id="access">
             <h2>Identity and household access</h2>
             <ul>
-              <li>Adults authenticate with Sign in with Apple or an expressly authorized review-access method.</li>
-              <li>Dependents are linked through short-lived, single-use, adult-managed invitations and cannot publicly self-register.</li>
+              <li>Each household adult authenticates with a distinct Sign in with Apple identity and confirms they are 18 or older.</li>
+              <li>An expressly authorized synthetic App Review account is fenced from creating, claiming, approving, or joining a real household and contains no real household data.</li>
+              <li>One primary adult may invite exactly one second adult through a short-lived, single-use invitation. Version 1.0 does not offer accounts, profiles, or invitations for anyone under 18.</li>
+              <li>Possessing a link never grants membership. The invited adult must authenticate and request to join; both adults compare the same short code; and the primary adult approves the exact pending request before activation.</li>
               <li>Authenticated role and household checks are designed to restrict records to the relevant household and permitted member.</li>
-              <li>Household adults can revoke dependent-device access, and account deletion is available in the app.</li>
+              <li>The primary adult can remove the second adult, the second adult can leave, and account deletion is available in the app.</li>
               <li>Public household creation requires an adult Sign in with Apple session, app-integrity validation, coarse age and legal attestations, replay controls, and server-authoritative membership creation.</li>
               <li>Release and development identifiers and backends are separate so test data is not intentionally mixed with release household data.</li>
             </ul>
@@ -99,7 +101,7 @@
           <section id="devices">
             <h2>Devices, Watch, and invitations</h2>
             <p>The 1.0 Apple Watch experience uses the paired iPhone for initial authentication and authoritative synchronization. Watch and phone commands are scoped to the signed-in account and current household binding. Signing out, deleting an account, or switching accounts is designed to clear private task state and end active app surfaces on that device.</p>
-            <p>Invitation links contain an expiring token. When the installed app does not open directly, the fallback page removes the token from browser history before displaying invitation state and does not place it in browser storage, analytics, console output, or an onward link. Recipients should still treat every invitation as confidential.</p>
+            <p>Invitation links contain an expiring token that can start only a pending request. The invited adult receives no household member list, task, reward, note, or history before approval. When the installed app does not open directly, the fallback page removes the token from browser history before displaying invitation state and does not place it in browser storage, analytics, console output, or an onward link. Recipients should still treat every invitation as confidential.</p>
           </section>
 
           <section id="providers">
@@ -112,7 +114,7 @@
             <h2>Your part in household security</h2>
             <ul>
               <li>Use a protected Apple Account and device passcode, and keep supported operating-system updates installed.</li>
-              <li>Share invitations only with the intended person and never post an invitation or access code publicly.</li>
+              <li>Share invitations only with the intended second adult and never post an invitation, comparison code, or access code publicly.</li>
               <li>Revoke a lost, sold, repaired, or shared device promptly.</li>
               <li>Do not put passwords, access codes, government identifiers, bank credentials, medical records, or unnecessary sensitive information in tasks or support messages.</li>
               <li>Contact us promptly if a household member, role, assignment, or device appears unfamiliar.</li>

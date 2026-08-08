@@ -139,8 +139,9 @@ if (!joinScript.includes('window.location.hash') || joinScript.includes('window.
 
 const privacy = await readFile('family/privacy/index.html', 'utf8').catch(() => '')
 for (const disclosure of [
-  'An adult age 18 or older',
-  'age 13 or older',
+  'An adult age 18 or older creates one household',
+  'exactly one second adult age 18 or older',
+  'Possessing or opening a link does not grant household membership',
   'money reward is a private household allowance promise',
   'minimal pseudonymous binding between the active account and its Sign in with Apple identity',
   'we do not request or upload an ActivityKit push token',
@@ -159,13 +160,19 @@ for (const deferred of [
 if (!privacy.includes('Simpli-FI OS LLC, a Texas limited liability company')) {
   findings.push('privacy policy must identify the exact operating entity')
 }
+for (const incompatible of ['age 13', 'dependent-device', 'linked dependent', 'managed-dependent', 'A teen']) {
+  if (privacy.includes(incompatible)) findings.push(`privacy policy contradicts the adults-only 1.0 contract: ${incompatible}`)
+}
 
 const terms = await readFile('family/terms/index.html', 'utf8').catch(() => '')
-for (const disclosure of ['Simpli-FI OS LLC', 'Denton County, Texas', 'at least 13 years old', 'household records', 'Apple’s Standard Licensed Application End User License Agreement']) {
+for (const disclosure of ['Simpli-FI OS LLC', 'Denton County, Texas', 'at least 18 years old', 'only one active Simpli-FI Family household membership', 'Possessing or opening an invitation does not grant membership', 'household records', 'Apple’s Standard Licensed Application End User License Agreement']) {
   if (!terms.includes(disclosure)) findings.push(`terms are missing required language: ${disclosure}`)
 }
 for (const deferred of ['finance summaries', 'connected email providers', 'EMAIL SUMMARY', 'WEATHER RESULT']) {
   if (terms.includes(deferred)) findings.push(`terms still describe deferred Store feature: ${deferred}`)
+}
+for (const incompatible of ['at least 13', 'age 13', 'under 13', 'Dependents join', 'invites a dependent']) {
+  if (terms.includes(incompatible)) findings.push(`terms contradict the adults-only 1.0 contract: ${incompatible}`)
 }
 
 const security = await readFile('family/security/index.html', 'utf8').catch(() => '')
@@ -182,6 +189,25 @@ const support = await readFile('family/support/index.html', 'utf8').catch(() => 
 if (!support.includes('<strong>More</strong>')) findings.push('support page must match the release More tab')
 if (support.includes('uses invitation-based access')) {
   findings.push('support page still says public household creation is invitation-only')
+}
+for (const disclosure of ['How does a second adult join?', 'both adults compare the same six-character code', 'Opening a link does not grant membership']) {
+  if (!support.includes(disclosure)) findings.push(`support page is missing adult-linking guidance: ${disclosure}`)
+}
+if (!support.includes('account identifiers removed or replaced by a deletion pseudonym')) {
+  findings.push('support page is missing precise second-adult deletion behavior')
+}
+for (const incompatible of ['dependent invitation', 'a dependent join', 'child under 13', 'managed-dependent']) {
+  if (support.includes(incompatible)) findings.push(`support page contradicts the adults-only 1.0 contract: ${incompatible}`)
+}
+
+for (const controlFile of ['CLAUDE.md', 'PRODUCT.md']) {
+  const control = await readFile(controlFile, 'utf8').catch(() => '')
+  if (!/adults.only/i.test(control)) {
+    findings.push(`${controlFile} is missing the adults-only 1.0 boundary`)
+  }
+  if (/\bdependents?\b|\bteenagers?\b|age 13/i.test(control)) {
+    findings.push(`${controlFile} contradicts the adults-only 1.0 boundary`)
+  }
 }
 
 const association = expectedFamilyAASA
@@ -203,4 +229,4 @@ if (findings.length > 0) {
   process.exit(1)
 }
 
-console.log('Family public local contract passed (routes, approved icon, grayscale + #9EDD36, privacy, safe invitation handoff, AASA content); production hosting remains unverified')
+console.log('Family public local contract passed (routes, approved icon, grayscale + #9EDD36, adults-only legal copy, safe second-adult invitation handoff, AASA content); production hosting remains unverified')
