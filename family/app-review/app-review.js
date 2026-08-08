@@ -31,7 +31,12 @@ function initializeReviewAccessPage() {
   helpButton.textContent = 'It did not open in the app'
   helpButton.hidden = false
   helpButton.addEventListener('click', () => {
-    message.textContent = 'Install Simpli-FI Family from TestFlight or the App Store build under review, then open the original HTTPS link again from App Store Connect. If it still does not open in the app, contact the developer listed in the review notes for a fresh link.'
+    // This page only renders when iOS did NOT hand the link to the app, and the
+    // most common reason is not a missing install: iOS never activates a
+    // universal link for an address typed or pasted into Safari, which is how a
+    // reviewer reaches a URL printed in App Store Connect. Telling them to
+    // reinstall first sends them round a loop that cannot resolve.
+    message.textContent = 'If Simpli-FI Family is already installed, iOS did not hand this link to the app. Press and hold the link in the review notes and choose Open in “Simpli-FI Family”; a pasted address never opens an app. If that does not work, delete and reinstall the build under review so iOS fetches the site association again, then press and hold the link once more. If the app is not installed, install the TestFlight or App Store build under review first. If it still does not open, contact the developer listed in the review notes.'
     helpButton.hidden = true
   })
 }
